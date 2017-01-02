@@ -1,0 +1,126 @@
+.modal{
+	
+font-family: 'Dosis', sans-serif;
+	
+	
+	
+}
+
+
+#main_table .table{
+  color:#37474f;
+font-family: 'Trirong', serif;
+
+ }  
+
+
+ 
+#main_table .td_free{
+ 
+   background-color:#7cb342;
+   color:white;
+   
+}
+
+
+
+#main_table th,td{
+ 
+ text-align:center; 
+    vertical-align:middle;
+
+}
+
+
+
+#main_table .td_click:hover {
+	
+	-webkit-box-shadow: 10px 0px 20px -7px rgba(255,255,255,0.7), -10px 0px 20px -7px rgba(255,255,255,0.7);
+	-moz-box-shadow: 10px 0px 20px -7px rgba(255,255,255,0.7), -10px 0px 20px -7px rgba(255,255,255,0.7);
+  box-shadow:10px 0px 20px -7px rgba(255,255,255,0.7), -10px 0px 20px -7px rgba(255,255,255,0.7);
+	
+	-webkit-transition: all .2s ease-out;
+	-moz-transition: all .2s ease-out;
+	-o-transition: all .2s ease-out;
+	transition: all .2s ease-out;
+	-moz-transform: scale(1.1);
+	-webkit-transform: scale(1.1);
+	-o-transform: scale(1.1);
+	-ms-transform: scale(1.1);
+	transform: scale(1.1);
+	
+} 
+
+
+#main_table .td_click{
+ 
+text-align:center; 
+vertical-align:middle;
+font-size:13px;
+
+}
+
+@media screen and (min-device-width: 768px) {   
+#main_table .td_click{
+ 
+width:12%;
+ 
+
+} 
+}
+  
+
+
+
+#main_table .td_lastfree{
+ 
+  background-color:#ff9800     ;
+  color:white;
+ 
+
+}
+
+
+
+#main_table .td_occupied{
+ 
+  background-color:#ff5722     ;
+  color:white;
+ 
+
+}
+#main_table .td_free:hover{
+ 
+   background-color:#aed581;
+ cursor: pointer; cursor: hand;
+   
+}
+
+
+#main_table .td_occupied:hover{
+ 
+  background-color:#ff8a65;
+  cursor: pointer; cursor: hand;
+ 
+ }
+
+#main_table .td_lastfree:hover{
+ 
+  background-color:#ffb74d ;
+  cursor: pointer; cursor: hand;
+ 
+ }
+
+#main_table th{
+ 
+  background-color:white;
+
+}
+
+#main_table tr td:first-child {
+font-size:25px;
+color:#bdbdbd;
+    background-color:white;
+}
+
+

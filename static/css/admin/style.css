@@ -1,0 +1,181 @@
+html, body {
+  height: 100%;
+}
+
+
+
+
+#panel_reservation_admin{
+	
+border:0!important;
+border-radius:0!important;
+	
+	
+	
+}
+
+#admin_main_table th {
+
+height:100px;
+font-size:15px;
+color:white;
+background-color:#78909c;
+text-align: center;
+vertical-align: middle;
+
+}
+
+#admin_main_table td {
+	
+height:100px;
+font-size:15px;
+background-color:white;
+width:21%;
+
+}
+
+
+#admin_main_table tr td:first-child {
+	
+font-size:15px;
+color:#78909c;
+background-color:white;
+width:5%;
+}
+
+
+#legend{
+margin-top:10px;
+}
+
+.navmenu {
+
+background-color:#78909c  !important;  
+padding-top: 50px;
+}
+
+.navbar {
+  
+display: block;
+text-align: center;
+}
+.navbar-brand {
+	
+display: inline-block;
+float: none;
+
+}
+.navbar-toggle {
+	
+position: absolute;
+float: left;
+margin-left: 15px;
+
+}
+
+.container-fluid {
+
+  max-width: 100%;
+}
+
+@media (min-width: 1px) {
+  .navbar-toggle {
+    display: block !important;
+  }
+}
+
+@media (min-width: 992px) {
+  body {
+    padding: 0 0 0 300px;
+  }
+  .navmenu {
+    padding-top: 0;
+	
+	
+  }
+  .navbar {
+	  
+	  
+    display: none !important; /* IE8 fix */
+  }
+}
+
+@media (max-width: 991px) {
+  body {
+    padding: 0 0 0 0px;
+  }
+  .navmenu {
+   padding-top: 50px;
+   
+  }
+  .navbar {
+	  
+  display: block;
+  text-align: center;
+  
+  
+  
+}
+
+
+
+
+}
+#show_hide_menu{
+
+	overflow:hidden;
+	margin:0;
+	background-color:#78909c  !important;  
+	color:#78909c  !important;  
+	border-radius: 0px;
+	border:0;
+}
+
+#show_hide_menu_a{
+
+	color:white!important;  
+}
+
+
+
+@media (min-width: 992px) {
+	
+	
+	
+.hidden_menu{
+	transition: 0.3s;
+	margin-left: -300px;
+	
+
+}
+
+.hidden_body{
+	transition: 0.3s;
+	padding-left: 0px;
+
+}
+
+
+
+}
+
+#admin_main_table td:hover { 
+	
+	
+	background-color:#e8f5e9;
+	
+	
+}
+
+#admin_main_table td{
+	padding:5px!important;
+}
+
+
+.alert_reserv{
+ height:100px;
+ margin-bottom:0!important;
+	
+	
+}
+
