@@ -43,6 +43,7 @@ class Admin extends CI_Controller {
 
 		for($j=1;$j<=4;$j++){
 		$data['table'][$date->format('H:i')]['kort '.$j]['text']='';
+		
 		$data['table'][$date->format('H:i')]['kort '.$j]['lvl']=9;
 	
 
@@ -66,7 +67,7 @@ class Admin extends CI_Controller {
 		
 		//wyciąganie danych o dostępności kortów
 		$result=$this->Admin_model->get_available_courts($where);
-		$data['players']=$this->Admin_model->get_players($where);
+		$data['players']=$this->Admin_model->getPlayers();
 		
 		
 			//matchowanie talicy z dostępnością
@@ -138,11 +139,25 @@ class Admin extends CI_Controller {
 	
 
 	
-			public function laodModal(){
+		public function loadModalDetails()
+		{
+
+		$id=$this->input->post('id');
+		
+		
+		$where=array(
+			'k.id'=>$id
+			);
 	
-	
-	
-			}
+		//wyciąganie danych o rezerwacji
+		$data['dane']=$this->Admin_model->getReservationDetails($where);
+		
+		$data['players']=$this->Admin_model->getPlayers();
+		
+		echo json_encode($data);	
+
+
+		}
 	
 	
 	

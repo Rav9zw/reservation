@@ -31,16 +31,9 @@ var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
    //wywołanie modala do edycji
  $("#admin_main_table").on("click", ".td_occupied", function() {
 	 
-	 day=$('#start_date').val();
-	 court=$(this).data('court').substring(5);;
-	 hour=$(this).data('hour');
-	 
-	$('#save_admin_reservation').data('day',day);
-	$('#save_admin_reservation').data('court',court);
-	$('#save_admin_reservation').data('hour',hour); 
-	 
-	$('#admin_reservation').modal()	;
-
+	var id=$(this).data('id');
+		
+	load_modal_details(id);
 	
 	
 	
@@ -198,7 +191,22 @@ $("#main_table").on("click", ".td_click", function(){
 			
 			
 			
+function fill_players(id_modal,dane_players){
+	
+	var players='';
 			
+			$.each(dane_players,function(i){
+			
+			players+='<option value="'+this.id+'">'+this.player+'</option>';
+			
+				
+			});
+				
+			$('#'+id_modal).html(players);
+}	
+
+
+	
 			
 //pobieranie informacji o dostępności kortów klubu za dany okres czasowy
 function admin_available_courts(client,date_start,sub,fade=null){
@@ -256,12 +264,12 @@ $.ajax({
 						
 							if(this.lvl==9)
 							{
-									tabela+='<td data-availability="free" data-hour="'+i+'" data-court="'+k+'" class="td_free td_click">'+this.text+'</td>';
+									tabela+='<td  data-availability="free" data-hour="'+i+'" data-court="'+k+'" class="td_free td_click">'+this.text+'</td>';
 							
 							
 							}else{
 								
-									tabela+='<td data-availability="occupied" data-hour="'+i+'" data-court="'+k+'" class="td_occupied td_click">'+this.text+'</td>';
+									tabela+='<td data-id="'+this.id+'" data-availability="occupied" data-hour="'+i+'" data-court="'+k+'" class="td_occupied td_click">'+this.text+'</td>';
 								
 							}
 									
@@ -281,16 +289,11 @@ $.ajax({
 
 			//uzupełniam graczy w modalu
 			
-			var players='';
+			var id_modal='player';
 			
-			$.each(dane.players,function(i){
+			fill_players(id_modal,dane.players);
 			
-			players+='<option value="'+this.id+'">'+this.player+'</option>';
 			
-				
-			});
-				
-			$('#player').html(players);
 
 			
 			
@@ -385,22 +388,18 @@ $.ajax({
 
 
 
-function 	load_modal_details(client,court,player,day,hour){
+function 	load_modal_details(id){
 
 
 
 $.ajax({
-            url: "admin/load_modal_details",
+            url: "admin/loadModalDetails",
 //          async: false,
             async: true,
             method: 'post',
             dataType: "json",
             data: {
-            client:client,
-            court:court,
-            player:player,
-			day:day,
-			hour:hour
+            id:id
 			},
             beforeSend: function() {
 				
@@ -412,6 +411,19 @@ $.ajax({
             success: function(dane) {
 			
 			
+			
+			
+			var id_modal='player_edit';
+			
+			fill_players(id_modal,dane.players);
+			
+			
+			
+			$('#player_edit').val(dane.dane.player).trigger("change");
+			$('#comment_edit').val(dane.dane.note);
+			
+			
+			$('#admin_edit_reservation').modal();
 
 
 			

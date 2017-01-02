@@ -59,7 +59,7 @@ private function getReservationType($player,$type,$isNew,$latest)
 public function get_available_courts($where){
 	
 	
-		$this->reserve->select("k.data, k.id_klienta ,TIME_FORMAT(k.godzina,'%H:%i')godzina,c.ilosc_kortow,k.nr_kortu,k.telefon ,k.typ_rezerwacji,
+		$this->reserve->select("k.id,k.data, k.id_klienta ,TIME_FORMAT(k.godzina,'%H:%i')godzina,c.ilosc_kortow,k.nr_kortu,k.telefon ,k.typ_rezerwacji,
 								(case when (TO_SECONDS(now())-TO_SECONDS(k.date_time))>300 or k.typ_rezerwacji=0 then 0
 								else 1
 								end)isNew,
@@ -95,6 +95,7 @@ public function get_available_courts($where){
 			
 			
 			$array[$row->godzina]['kort '.$row->nr_kortu]['text']=$reservation;
+			$array[$row->godzina]['kort '.$row->nr_kortu]['id']=$row->id;
 		
 		
 		
@@ -108,7 +109,7 @@ public function get_available_courts($where){
 
 
 
-public function get_players($where){
+public function getPlayers(){
 	
 	
 		$this->reserve->select("id,concat(surname,' ',name)player");
@@ -215,7 +216,39 @@ public function phone_verification($phone){
 
 
 
+public function getReservationDetails($where){
+	
 
+
+	
+	
+		$this->reserve->select("k.nr_kortu,k.data,k.godzina,k.notatka,k.telefon");
+		
+        $this->reserve->from("a_korty k");
+				
+		$this->reserve->where($where);
+	
+		$result = $this->reserve->get();
+		
+		
+		$array=array();
+		
+		
+		foreach($result->result() as $row)
+		{
+		$array['court']=$row->nr_kortu;	
+		$array['date']=$row->data;	
+		$array['hour']=$row->godzina;	
+		$array['note']=$row->notatka;	
+		$array['player']=$row->telefon;	
+			
+		;	
+			
+			
+		}
+	return $array;
+
+}
 
 
 
