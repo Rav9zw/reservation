@@ -15,10 +15,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	<!-- icons materialised --> 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 	
-	<!-- Select2 Core CSS -->
-	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
-	
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.6/select2-bootstrap.css" >
 	
 	<!-- Bootstrap Core CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -34,6 +30,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	
 	<link href="<?php echo base_url(); ?>static/css/plugins/bootstrap-datepicker3.css" rel="stylesheet"> 
    
+   <link href="<?php echo base_url(); ?>static/css/admin/pace.css" rel="stylesheet"> 
+   
 	<script   src="http://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="   crossorigin="anonymous"></script>
     
 	<!-- Compiled and minified JavaScript -->
@@ -46,7 +44,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	
 	<script src="<?php echo base_url(); ?>static/js/user/plugins/bootstrap-datepicker.js"></script>
     <script src="<?php echo base_url(); ?>static/js/user/plugins/bootstrap-datepicker.pl.js" charset="UTF-8"></script>
-
+	
+	<script src="<?php echo base_url(); ?>static/js/admin/plugins/pace.min.js"></script>
 	 
 </head>
 <body>
@@ -58,9 +57,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	
       <a class="navmenu-brand visible-md visible-lg" href="#">Admin panel</a>
       <ul class="nav navmenu-nav">
-        <li class="active"><a href="./">Rezerwacje</a></li>
-        <li><a href="#">Raporty</a></li>
-        <li><a href="#">Ustawienia</a></li>
+        <li class="<?echo @$admin_active; ?>"><a href="<?php echo base_url(); ?>index.php/admin">Rezerwacje</a></li>
+        <li class="<?echo @$usersadministration_active; ?>"><a href="<?php echo base_url(); ?>index.php/usersadministration">Użytkownicy</a></li>
+        <li class="<?echo @$active; ?>"><a href="<?php echo base_url(); ?>index.php/config">Ustawienia</a></li>
         
       </ul>
      
@@ -95,7 +94,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 </body>
 
-<script src="<?php echo base_url(); ?>static/js/admin/admin.js?v=<?=time();?>"></script>  
+<script src="<?php echo base_url(); ?>static/js/admin/<? echo $js.'.js?v='.time();?>"></script>  
 
    <script>
 
@@ -103,7 +102,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $(document).ready(function(){
 	
 $( ".select2" ).select2({
-    theme: "bootstrap"
+    theme: "bootstrap",
+	placeholder: "Wybierz",
+	allowClear: true
 });
 			
 			
@@ -117,6 +118,9 @@ $('#show_hide_menu_a').hide().fadeIn('slow').toggleClass("fa-times").toggleClass
 
 	
    });
+   
+   
+  $('[data-toggle="tooltip"]').tooltip();    
 });
 	
     </script>

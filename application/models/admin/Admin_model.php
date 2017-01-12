@@ -14,7 +14,7 @@ $this->reserve = $this->load->database('default', TRUE);
     }
 
 
-private function getReservationType($player,$type,$isNew,$latest)
+private function getReservationType($player,$type,$isNew,$latest,$notatka)
 {
 	
 							$animation='';
@@ -33,18 +33,18 @@ private function getReservationType($player,$type,$isNew,$latest)
 		
 		
 		case 0: $reservation="<div class='$animation alert_reserv alert alert-success' role='alert'><strong>$player</strong></br>
-		Notatka do rezerwacji</a>.
+		$notatka
 		</div>";
 		break;		
 		
 		case 1: $reservation="<div class='$animation alert_reserv alert alert-info' role='alert'><strong>$player</strong></br>
-		Notatka do rezerwacji</a>.
+		$notatka
 		</div>";
 		break;
 		
-		default:$reservation="<span class='$animation alert_reserv alert alert-primary'>$player</span>";
-		
-
+		default:$reservation="<div class='$animation alert_reserv alert alert-primary' role='alert'><strong>$player</strong></br>
+		$notatka
+		</div>";
 	}
 	return $reservation;
 	
@@ -59,7 +59,11 @@ private function getReservationType($player,$type,$isNew,$latest)
 public function get_available_courts($where){
 	
 	
-		$this->reserve->select("k.id,k.data, k.id_klienta ,TIME_FORMAT(k.godzina,'%H:%i')godzina,c.ilosc_kortow,k.nr_kortu,k.telefon ,k.typ_rezerwacji,
+		$this->reserve->select("h.id history_id,
+								(case when k.id_parent=0 then k.id
+								else k.id_parent
+								end)id,
+								k.data, k.id_klienta ,TIME_FORMAT(k.godzina,'%H:%i')godzina,c.ilosc_kortow,k.nr_kortu,k.telefon ,k.typ_rezerwacji,
 								(case when (TO_SECONDS(now())-TO_SECONDS(k.date_time))>300 or k.typ_rezerwacji=0 then 0
 								else 1
 								end)isNew,
@@ -68,7 +72,7 @@ public function get_available_courts($where){
 								then 1
 								else 0
 								end)latest,
-								ifnull(concat(p.surname,' ',p.name),k.telefon)player
+								ifnull(concat(p.surname,' ',p.name),k.telefon)player,k.notatka
 								
 								");
 		
@@ -76,6 +80,7 @@ public function get_available_courts($where){
 
 		$this->reserve->join("a_config c","c.id_klienta=k.id_klienta");
 		$this->reserve->join("a_players p","k.telefon=p.id","left");
+		$this->reserve->join("a_reserv_history h","k.id=h.id_reserv","left");
 		
 		$this->reserve->where($where);
   
@@ -88,24 +93,95 @@ public function get_available_courts($where){
 
        
             foreach ($result->result() as $row) {
-                
-			
-			$reservation=self::getReservationType($row->player,$row->typ_rezerwacji,$row->isNew,$row->latest);
-			
-			
-			
+
+			$reservation=self::getReservationType($row->player,$row->typ_rezerwacji,$row->isNew,$row->latest,$row->notatka);
+
 			$array[$row->godzina]['kort '.$row->nr_kortu]['text']=$reservation;
 			$array[$row->godzina]['kort '.$row->nr_kortu]['id']=$row->id;
 		
+
+			}
+	
+		return $array;
+		
+}
+
+
+
+
+public function getConfigHours($where){
+	
+	
+	$this->reserve->select("substring(hour,1,2)hour,value");
+		
+	$this->reserve->from("a_config_hour c");
+	
+	$this->reserve->where($where);
+	
+	$result=$this->reserve->get();
+	
+	$array=array();
+	
+	
+	
+
+	
+	foreach($result->result() as $row)
+	{
+		
+		if($row->value==0)
+		$array['work'][intval($row->hour)]=$row->value;
+	
+		if($row->value==1)
+		$array['halfs'][intval($row->hour)]=$row->value;
 		
 		
-		
-		
+	}
+	
+			$array['extremes']['min']=0;	
+			$min=true;
+			
+			for($i=0;$i<=23;$i++){
+			
+				if(isset($array['work'][$i]) && $min==true ){
+				 $array['extremes']['min']=$i+1;	
+				$min=true;
+				}else
+				 $min=false;	
+			
+			
+			}
+			$array['extremes']['max']=23;	
+			$max=true;
+			
+			for($i=23;$i>=0;$i--){
+			
+				if(isset($array['work'][$i]) && $max==true ){
+				 $array['extremes']['max']=$i-1;	
+				$max=true;
+				}else
+				 $max=false;	
+			
 			
 			}
 	
+	
 	return $array;
+	
+	
+	
+	
 }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -137,49 +213,110 @@ public function getPlayers(){
 
 
 
-
-
-public function insert_reservation($insert,$where){
-	
-
+private function checkForReservation($where){
 	
 	
 	
 	
-	
-		$array=array();
-	
-		$this->reserve->select("id");
+		$this->reserve->select("k.id");
 		
-        $this->reserve->from("a_korty");
+        $this->reserve->from("a_korty k");
 
+		$this->reserve->join("a_reserv_history h","k.id=h.id_reserv","left");
+		
 		$this->reserve->where($where);
+		
+		$this->reserve->where('h.id_reserv is null');
 	
 		$result = $this->reserve->get();
 		
-		if($result->num_rows()>0){
+		return $result->num_rows();
+		
+	
+}
+
+
+private function checkForHalfs($where){
+	
+	
+		
+	
+		$this->reserve->select("k.id");
+		
+        $this->reserve->from("a_config_hour k");
+		
+		$this->reserve->where($where);
+
+		$result = $this->reserve->get();
+		
+		//echo $this->reserve->last_query();
+		
+		return $result->num_rows();
+		
+	
+}
+
+
+public function insert_reservation($insert,$where,$whereHalf){
+	
+		$isFree=self::checkForReservation($where);
+		
+		$isHalf=self::checkForHalfs($whereHalf);
+	
+	
+	
+	
+		if($isFree>0){
 			
-		$array['message']='<strong>Kort zajęty!</strong>Kort zarezerwowany przez innego użytkownika';
+		$array['message']='<strong>Kort zajęty!</strong> Kort zarezerwowany przez innego użytkownika';
 		$array['status']='danger';
 
 		
 		return $array;
-	}
+		}
 	
+		$hour=new DateTime(date('Y-m-d').' '.$insert['godzina']);
+		$hour->modify('+30 minutes');
+		$where['godzina']=$hour->format('H:i:s');
+		
+		$isFreeHalf=self::checkForReservation($where);
+		
+		if($isFreeHalf>0){
+			
+		$array['message']='<strong>Kort zajęty!</strong> Kort dostępny tylko pierwsze 30min';
+		$array['status']='danger';
+
+		
+		return $array;
+		}
+		
+	
+
+		$this->reserve->insert('a_korty', $insert);
+		
+		if($isHalf>0){	
+		
+		$insert['id_parent']=$this->reserve->insert_id();
+				
+		$insert['godzina']=$hour->format('H:i:s');
+		$insert['notatka']='<i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i>';
+		
 		$this->reserve->insert('a_korty', $insert);
 
+		}
+		
+		//echo $this->reserve->affected_rows();
+		// echo $this->reserve->last_query();
 
-    //echo $this->reserve->affected_rows();
-    //  echo $this->reserve->last_query();
-
-	 if($this->reserve->affected_rows() == 1){
+		
+	 if($this->reserve->affected_rows()== 1){
 		 
 		 $array['message']='<strong>Powodzenie!</strong> Kort zarezerwowany pomyślnie.';
 		 $array['status']='success';
 
 	 } else{
 		 
-		 $array['message']='<strong>Błąd!</strong>Coś poszło nie tak, prosze odświeżyc strone i spróbować ponownie';
+		 $array['message']='<strong>Błąd!</strong> Coś poszło nie tak, prosze odświeżyc strone i spróbować ponownie';
 		 $array['status']='danger';
 		 
 		 
@@ -250,11 +387,116 @@ public function getReservationDetails($where){
 
 }
 
+public function insertNewPlayer($insert,$where){
+	
+
+	
+	
+	
+	
+	
+		$array=array();
+	
+		$this->reserve->select("phone");
+		
+        $this->reserve->from("a_players");
+
+		$this->reserve->where($where);
+	
+		$result = $this->reserve->get();
+		
+		if($result->num_rows()>0){
+			
+		$array['message']='<strong>Uwaga!</strong> Podany numer telefonu jest już w bazie';
+		$array['status']='danger';
+
+		
+		return $array;
+	}
+	
+		$this->reserve->insert('a_players', $insert);
 
 
+    //echo $this->reserve->affected_rows();
+    //  echo $this->reserve->last_query();
+
+	 if($this->reserve->affected_rows() == 1){
+		 
+		 $array['message']='<strong>Powodzenie!</strong> Użytkownik dodany pomyślnie.';
+		 $array['status']='success';
+
+	 } else{
+		 
+		 $array['message']='<strong>Błąd!</strong> Coś poszło nie tak, prosze odświeżyc strone i spróbować ponownie';
+		 $array['status']='danger';
+		 
+		 
+	 }
+	
+		return $array;
+			
+	
+}
 
 
+private function getHalfs($idParent){
+	
+	$halfId=false;
+	
+	$this->reserve->select('id');
+	
+	$this->reserve->from('a_korty k');
+	
+	$this->reserve->where("id_parent=$idParent");
+	
+	$result=$this->reserve->get();
+	
+	//echo $this->reserve->last_query();
+	
+	foreach($result->result() as $row)
+	{
+	
+	$halfId=$row->id;
+		
+	}
+	
+	return $halfId;
+	
+	
+}
 
+
+public function deleteReservation($insert){
+	
+
+	
+	
+	
+	$this->reserve->insert('a_reserv_history', $insert);
+
+
+	$halfId['id_reserv']=self::getHalfs($insert['id_reserv']);
+	
+	if($halfId)
+	$this->reserve->insert('a_reserv_history', $halfId);	
+
+	 if($this->reserve->affected_rows() == 1){
+		 
+		 $array['message']='<strong>Powodzenie!</strong> Rezerwacja usunięta';
+		 $array['status']='success';
+
+	 } else{
+		 
+		 $array['message']='<strong>Błąd!</strong>Coś poszło nie tak, prosze odświeżyc strone i spróbować ponownie';
+		 $array['status']='danger';
+		 
+		 
+	 }
+	
+		return $array;
+			
+	
+}
 
 
 

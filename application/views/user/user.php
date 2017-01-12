@@ -13,7 +13,7 @@
 	   
 	    <div class="form-group">
 		
-	<h5 id="message" >W celu rezerwacji prosimy o wypełnienie formularza</h5>	
+	
   <label for="phone_reserv">Telefon:</label>
   
   <input type="text" id="phone_reserv" class="form-control phone" >
@@ -25,7 +25,7 @@
 		  </select>
 		</div>
 	<div class="checkbox">
-  <label><input id="regulamin" type="checkbox" value="">akceptuję regulamin klubu "nazwa klubu" </label>
+  <label><input id="regulamin" type="checkbox" value="">Akceptuję regulamin klubu "Squash Arena" </label>
 </div>	
 
 <div class="alert alert-success hidden" id="message_reservation">
@@ -42,44 +42,62 @@
     </div><!-- /.modal-content -->
 	
 	
-	<div class="modal-content user_add hidden">
-      <div class="modal-header">
+	
+	
+	
+	
+	
+ <div  class="user_new_user modal-content hidden">
+    
+	<div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Nowy użytkownik</h4>
       </div>
       <div class="modal-body">
-       
-	   
-	    <div class="form-group">
-		
-	<h5 id="messagephone" >Brak telefonu w bazie</h5>	
-  <label for="name_new">Imie:</label>
+     
+	 	<h4 id="message" >Brak numeru telefonu w bazie, w celu rejestracji prosimy o jednorazowe wypełnienie formularza.</h5>	
+	 
+	 <form class="form-horizontal">
+  <div class="form-group">
+    <label for="user_new_phone"  class="col-sm-2 control-label">Telefon</label>
+    <div class="col-sm-10">
+      <input class="form-control" id="user_new_phone" type="text" value="">
+    </div>
+  </div>
+ 
+   <div class="form-group">
+    <label for="user_new_surname"  class="col-sm-2 control-label">Nazwisko</label>
+    <div class="col-sm-10">
+      <input class="form-control" id="user_new_surname" type="text" value="">
+    </div>
+  </div>
   
-  <input type="text" id="name_new" class="form-control " >
+    <div class="form-group">
+    <label for="user_new_name"  class="col-sm-2 control-label">Imię</label>
+    <div class="col-sm-10">
+      <input class="form-control" id="user_new_name" type="text" value="">
+    </div>
+  </div>
   
-    <label for="surname_new">Nazwisko:</label>
-  <input type="text" id="surname_new" class="form-control " >
   
-   <label for="mail_new">Email:</label>
-  <input type="text" id="mail_new" class="form-control " >
-  
-   <label for="code_new">Kod weryfikacyjny:</label>
-  <input type="text" id="code_new" class="form-control " >
-
-
-		</div>
-
-
-<div class="alert alert-success hidden" id="message_newuser">
+    <div class="form-group">
+    <label for="user_new_email"  class="col-sm-2 control-label">E-mail</label>
+    <div class="col-sm-10">
+      <input class="form-control" id="user_new_email" type="text" value="">
+    </div>
+  </div>
+ 
+	</form>
+	 
+<div class="alert alert-success hidden" id="message_user_new_user">
 
 </div>
-
-
       </div>
+  
       <div class="modal-footer">
         <button type="button" class="btn btn-default cancelation" data-dismiss="modal">Anuluj</button>
-        <button type="button"  class="btn btn-success hidden confirmation" data-dismiss="modal">Ok <i class="fa fa-check" aria-hidden="true"></i></button>
-        <button type="button" id="reservation_button_newuser" class="btn btn-primary save">Zarezerwuj</button>
+        <button type="button" id="save_user_new_user" class="btn btn-primary">Utwórz konto</button>
+        <button type="button" id="back_user_new_user" class="btn btn-primary hidden">Powrót do rezerwacji</button>
       </div>
     </div><!-- /.modal-content -->
 	

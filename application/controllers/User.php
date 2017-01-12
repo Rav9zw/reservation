@@ -58,6 +58,7 @@ class User extends CI_Controller {
 		
 		
 		$where=array(
+		'h.id_reserv'=>null,
 		'k.id_klienta'=>$client,
 		'data>='=>$date_start,
 		'data<='=>$date_end
@@ -97,15 +98,17 @@ class User extends CI_Controller {
 		$hour=$this->input->post('hour');
 			
 			$where=array(
+			'h.id_reserv'=>null,
+			'k.id_klienta'=>$client,
+			'k.data'=>$day,
+			'k.godzina'=>$hour
 			
-			'c.id_klienta'=>$client,
-						
 			);
 			
 			
 			
 		//wyciąganie dostępnych kortów
-		$result=$this->User_model->get_available_courts_details($where,$day,$hour);
+		$result=$this->User_model->get_available_courts_details($where);
 			
 			
 			
@@ -123,11 +126,11 @@ class User extends CI_Controller {
 		$date_time=date('Y-m-d H:i:s');
 		$client=$this->input->post('client');
 		$court=$this->input->post('court');
-		$phone=$this->input->post('phone');
+		$player=$this->input->post('player');
 		$day=$this->input->post('day');
 		$hour=$this->input->post('hour');
 		
-		
+		/*
 		if(!preg_match("/^[0-9]{9}$/", $phone)) {
 		
 		$result['result']['message']='<strong>Telefon!</strong> Niepoprawny numer telefonu.';
@@ -136,7 +139,7 @@ class User extends CI_Controller {
 		return false;
 		
 		}
-	
+	*/
 
 		
 			$insert=array(
@@ -146,14 +149,14 @@ class User extends CI_Controller {
 			'nr_kortu'=>$court,
 			'godzina'=>$hour,
 			'data'=>$day,
-			'telefon'=>$phone,
+			'telefon'=>$player,
 			'typ_rezerwacji'=>1
 						
 			);
 			
 			$where=array(
 			
-			
+			'h.id_reserv'=>null,
 			'id_klienta'=>$client,
 			'nr_kortu'=>$court,
 			'godzina'=>$hour,
@@ -164,8 +167,7 @@ class User extends CI_Controller {
 			
 		
 			
-		//sprawdzanie czy telefon jest w bazie	
-		$user=$this->User_model->phone_verification($phone);
+		
 			
 			
 			
@@ -183,7 +185,7 @@ class User extends CI_Controller {
 
 
 		//$adres = $key;
-		
+		/*
 		if(	$result['result']['status']=='success'){
 		$params = array(
 			 'username' => 'rav86pl@hotmail.com',
@@ -201,7 +203,7 @@ class User extends CI_Controller {
 			
 			
 		}
-		
+		*/
 		
 		echo json_encode($result);	
 			
@@ -209,9 +211,74 @@ class User extends CI_Controller {
 			
 			
 		}	
-
+//sprawdzanie czy telefon jest w bazie	
+public function checkPhone()
+{
+		$phone=$this->input->post('phone');
+	
+	
+		$where=array(
+			
+			
+			'phone'=>$phone,
+		
+			);
+	
+	
+		$result=$this->User_model->phone_verification($where);
+		
+		echo json_encode($result);	
+	
+}	
+	
+	
+	
+	
+	
+   		public function insertNewPlayer(){
+			
+			
+			
+		$registered=date('Y-m-d');
+		$phone=$this->input->post('phone');
+		$surname=$this->input->post('surname');
+		$name=$this->input->post('name');
+		$email=$this->input->post('email');
+		
+		
+		
+			$insert=array(
+			
+			'phone'=>$phone,
+			'surname'=>$surname,
+			'name'=>$name,
+			'email'=>$email,
+			'registered'=>$registered
 						
-   
+			);
+	
+	
+			
+			$where=array(
+			
+			
+			'phone'=>$phone
+		
+						
+			);
+			
+
+		//wrzucanie nowej rezerwacji
+		$result['result']=$this->User_model->insertNewPlayer($insert,$where);
+			
+
+		
+		echo json_encode($result);	
+			
+			
+			
+			
+		}	
 
 
 public function sms_send($params ,$backup = false) 

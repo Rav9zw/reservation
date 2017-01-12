@@ -15,6 +15,9 @@ var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 	 court=$(this).data('court').substring(5);;
 	 hour=$(this).data('hour');
 	 
+	 
+	 
+	 
 	$('#save_admin_reservation').data('day',day);
 	$('#save_admin_reservation').data('court',court);
 	$('#save_admin_reservation').data('hour',hour); 
@@ -67,14 +70,22 @@ $('#start_date').datepicker('update', today);
 //czyszczenie modala po zamknięciu
 $('.modal').on('hidden.bs.modal', function () {
 
-$('#message_reservation').removeClass('alert-succes alert-danger');
-$('.confirmation').addClass('hidden');
-$('#message_reservation').addClass('hidden');
-$('.phone').val('');
-$('#reservation_button').removeClass('hidden');
-$('.cancelation').removeClass('hidden');
-$('.confirmation').addClass('hidden');
-$('#regulamin').prop('checked', false); // Unchecks it
+
+$('.admin_new_user').addClass('hidden');
+$('#admin_reservation_content').removeClass('hidden');
+
+$('#cancel_reservation').addClass('hidden');
+$('#main_edit').removeClass('hidden');
+
+$('.messages').addClass('hidden');
+$('.confirm').addClass('hidden');
+$('.basic').removeClass('hidden');
+
+
+$('#comment').val('');
+
+
+
    
    
 })
@@ -91,6 +102,10 @@ var date_start=$('#start_date').val();
 
 
 admin_available_courts(client,date_start,sub='0',1);
+
+setInterval(function(){ 
+admin_available_courts(client,date_start,sub='0');
+ }, 15000);
 
 
       
@@ -172,6 +187,8 @@ $("#main_table").on("click", ".td_click", function(){
 			
 			var player=$('#player').val();
 			
+			var comment=$('#comment').val();
+			
 			var day=$(this).data('day');
 			
 			var hour=$(this).data('hour');
@@ -181,37 +198,119 @@ $("#main_table").on("click", ".td_click", function(){
 			
 			
 			
-			insert_reservation(client,court,player,day,hour);
+			insert_reservation(client,court,player,comment,day,hour);
+		
+			
+			});	
+
+
+			
+			$(".modal").on("click", "#admin_new_user_btn", function(){
+
+
+			$('#admin_reservation_content').addClass('hidden');
+			
+			$('.admin_new_user').removeClass('hidden').hide().fadeIn('slow');;
+			
+			
+		
+			
+			});	
+
+			
+			$(".modal").on("click", "#admin_back", function(){
+
+			
+			if($('#cancel_admin_new_user').hasClass('hidden'))
+			{
+			$('#cancel_admin_new_user').removeClass('hidden');
+			$('#save_admin_new_user').removeClass('hidden');
+			$('#ok_admin_new_user').addClass('hidden');
+			$('#message_new_player').addClass('hidden');
+			
+			}
+			
+			$('.admin_new_user').addClass('hidden');
+			
+			$('#admin_reservation_content').removeClass('hidden').hide().fadeIn('slow');
+			
+			
 		
 			
 			});		
 			
+			$(".modal").on("click", "#save_admin_new_user", function(){
+
+			var phone=$('#admin_new_phone').val();
+			var surname=$('#admin_new_surname').val();
+			var name=$('#admin_new_name').val();
+			var email=$('#admin_new_email').val();
+			
+			
+			
+			insert_new_player(phone,surname,name,email);
+			
+			
+		
+			
+			});	
+			
+			$(".modal").on("click", "#delete_reserv", function(){
+				
+				
+			var id=$(this).data('id');	
+				
+			$('#delete_reserv_confirm').data('id',id);	
+			$('#main_edit').addClass('hidden')
+			$('#cancel_reservation').removeClass('hidden').hide().fadeIn('slow');
+			
+			
+			
+		
+			
+			});	
+			
+			
+			$(".modal").on("click", "#delete_reserv_confirm", function(){
+				
+				
+			var id=$(this).data('id');	
+			
+			delete_reservation(id);
+			
+			
+			
+		
+			
+			});	
+			
+			
+			$(".modal").on("click", "#admin_delete_back", function(){
+				
+				
+			$('#cancel_reservation').addClass('hidden')
+			$('#main_edit').removeClass('hidden').hide().fadeIn('slow');
+			
+			
+			
+			
+		
+			
+			});	
+			
+			
+			
+			
 //ajax //////////////////////////////////////////////////////////////////////
 			
 			
-			
-			
-function fill_players(id_modal,dane_players){
-	
-	var players='';
-			
-			$.each(dane_players,function(i){
-			
-			players+='<option value="'+this.id+'">'+this.player+'</option>';
-			
-				
-			});
-				
-			$('#'+id_modal).html(players);
-}	
-
 
 	
 			
 //pobieranie informacji o dostępności kortów klubu za dany okres czasowy
-function admin_available_courts(client,date_start,sub,fade=null){
+function admin_available_courts(client,date_start,sub,fade){
 
-
+ if (typeof(fade)==='undefined') fade = null;
 
 $.ajax({
             url: "admin/admin_available_courts",
@@ -227,14 +326,21 @@ $.ajax({
 			},
             beforeSend: function() {
 				
-				
-
-				
+			if(fade==1){
+			$('#table_loader').removeClass('hidden').hide().fadeIn('slow');
+			$('#admin_main_table').addClass('hidden');
+			}
 
         
             },
 
             success: function(dane) {
+				
+				if(fade==1){
+				$('#table_loader').addClass('hidden');
+				$('#admin_main_table').removeClass('hidden');
+				}
+				
 				
 				var first_key=Object.keys(dane.table)[0];
 				
@@ -282,16 +388,18 @@ $.ajax({
 			tabela+='</tbody></table>';
 			
 		
-			if(fade==1)
+			if(fade==1){
 			$('#admin_main_table').hide().fadeIn('slow').html(tabela);
+			fill_players();
+			}
 			else
 			$('#admin_main_table').html(tabela);
 
 			//uzupełniam graczy w modalu
 			
-			var id_modal='player';
+	
 			
-			fill_players(id_modal,dane.players);
+			
 			
 			
 
@@ -317,7 +425,7 @@ $.ajax({
 
 
 
-function 	insert_reservation(client,court,player,day,hour){
+function 	insert_reservation(client,court,player,comment,day,hour){
 
 
 
@@ -331,6 +439,7 @@ $.ajax({
             client:client,
             court:court,
             player:player,
+            comment:comment,
 			day:day,
 			hour:hour
 			},
@@ -350,11 +459,7 @@ $.ajax({
             success: function(dane) {
 			
 			
-				$('#message_reservation').removeClass('alert-danger');
 			
-				$('#message_reservation').removeClass('hidden').hide().fadeIn('slow').html(dane.result.message);
-				
-				$('#message_reservation').addClass('alert-'+dane.result.status);
 				
 				if(dane.result.status=='success'){
 				$('#reservation_button').addClass('hidden').hide().fadeIn('slow');
@@ -367,7 +472,16 @@ $.ajax({
 				admin_available_courts(client,date_start,sub='0');
 				
 
-			}
+				}else{
+					
+				$('#message_reservation').removeClass('alert-danger');
+			
+				$('#message_reservation').removeClass('hidden').hide().fadeIn('slow').html(dane.result.message);
+				
+				$('#message_reservation').addClass('alert-'+dane.result.status);	
+					
+					
+				}
 
 
 			
@@ -384,6 +498,71 @@ $.ajax({
 
 
 }
+
+
+
+
+
+function 	insert_new_player(phone,surname,name,email){
+
+
+
+$.ajax({
+            url: "admin/insertNewPlayer",
+//          async: false,
+            async: true,
+            method: 'post',
+            dataType: "json",
+            data: {
+				
+            phone:phone,
+            surname:surname,
+            name:name,
+			email:email
+			
+			
+			},
+            beforeSend: function() {
+				
+
+            },
+
+            success: function(dane) {
+			
+			
+			
+			
+				$('#message_new_player').removeClass('alert-danger');
+			
+				$('#message_new_player').removeClass('hidden').hide().fadeIn('slow').html(dane.result.message);
+				
+				$('#message_new_player').addClass('alert-'+dane.result.status);
+				
+				if(dane.result.status=='success'){
+					
+				$('#save_admin_new_user').addClass('hidden').hide().fadeIn('slow');
+				$('#cancel_admin_new_user').addClass('hidden').hide().fadeIn('slow');
+				$('#ok_admin_new_user').removeClass('hidden').hide().fadeIn('slow');
+				fill_players();
+				}
+		
+		
+			  },
+            
+          
+ 
+            });
+
+
+			
+
+
+
+}
+
+
+
+
 
 
 
@@ -410,17 +589,15 @@ $.ajax({
 
             success: function(dane) {
 			
+
+			
+			$('#player_edit').val(dane.dane.player).trigger("change");;
 			
 			
-			
-			var id_modal='player_edit';
-			
-			fill_players(id_modal,dane.players);
-			
-			
-			
-			$('#player_edit').val(dane.dane.player).trigger("change");
 			$('#comment_edit').val(dane.dane.note);
+			
+			
+			$('#delete_reserv').data('id',id);
 			
 			
 			$('#admin_edit_reservation').modal();
@@ -440,6 +617,123 @@ $.ajax({
 
 
 }
+
+
+function 	fill_players(){
+
+
+
+$.ajax({
+            url: "admin/getPlayers",
+//          async: false,
+            async: true,
+            method: 'post',
+            dataType: "json",
+            data: {
+          
+			},
+            beforeSend: function() {
+				
+				
+			
+        
+            },
+
+            success: function(dane) {
+
+			var players='<option></option>';
+			
+			
+			$.each(dane.players,function(i){
+			
+			players+='<option value="'+this.id+'">'+this.player+'</option>';
+			
+				
+			});
+			
+			
+				
+			$('#player').html(players);
+			$('#player_edit').html(players);
+
+		
+
+			  },
+            
+          
+ 
+            });
+
+
+			
+
+
+
+}
+
+
+function 	delete_reservation(id){
+
+
+
+$.ajax({
+            url: "admin/deleteReservation",
+//          async: false,
+            async: true,
+            method: 'post',
+            dataType: "json",
+            data: {
+			id:id
+			},
+            beforeSend: function() {
+				
+				
+			
+        
+            },
+
+            success: function(dane) {
+
+	
+				$('#message_delete_reservation').removeClass('alert-danger');
+			
+				$('#message_delete_reservation').removeClass('hidden').hide().fadeIn('slow').html(dane.result.message);
+				
+				$('#message_delete_reservation').addClass('alert-'+dane.result.status);
+				
+				if(dane.result.status=='success'){
+					
+				$('#admin_delete_cancel').addClass('hidden').hide().fadeIn('slow');
+				$('#delete_reserv_confirm').addClass('hidden').hide().fadeIn('slow');
+				$('#delete_reserv_ok').removeClass('hidden').hide().fadeIn('slow');
+		
+		
+				var date_start=$('#start_date').val();
+				
+				
+				admin_available_courts(client,date_start,sub='0');
+		
+				}
+	
+	
+			},
+            
+          
+		  
+		  
+ 
+            });
+
+
+			
+
+
+
+}
+
+
+
+
 
 
 

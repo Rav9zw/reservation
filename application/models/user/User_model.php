@@ -27,6 +27,9 @@ public function get_available_courts($where){
 
 		$this->reserve->join("a_config c","c.id_klienta=k.id_klienta");
 		
+		$this->reserve->join("a_reserv_history h","k.id=h.id_reserv","left");
+		
+		
 		$this->reserve->where($where);
 		
 		$this->reserve->group_by("data, id_klienta ,TIME_FORMAT(k.godzina,'%H:%i')");
@@ -51,21 +54,51 @@ public function get_available_courts($where){
 			$array[$row->godzina][$row->data]['lvl']=1;
 			}
 			
+			
+			
+			
 			}
 	
 	return $array;
 }
 
 
-public function get_available_courts_details($where,$day,$hour){
+private function getCourtCount($client){
 	
 	
-		$this->reserve->select("k.nr_kortu,c.ilosc_kortow");
+		$where=array('id_klienta'=>$client);
+	
+		$this->reserve->select("c.ilosc_kortow");
 		
         $this->reserve->from("a_config c");
+	
+		$this->reserve->where($where);
+	
+		$result = $this->reserve->get();
+	 
+	 $count='';
+	 
+	 foreach($result->result() as $row){
+		 
+		 $count=$row->ilosc_kortow;
+		 
+	 }
+	 
+	 
+	 return $count;
+	 
+}
 
-		$this->reserve->join("a_korty k","c.id_klienta=k.id_klienta  AND k.data = '$day' AND k.godzina = '$hour' ","left");
+
+public function get_available_courts_details($where){
+	
+	
+		$this->reserve->select("k.nr_kortu");
 		
+        $this->reserve->from("a_korty k");
+
+		$this->reserve->join("a_reserv_history h","k.id=h.id_reserv","left");
+
 		$this->reserve->where($where);
 
 		
@@ -73,20 +106,22 @@ public function get_available_courts_details($where,$day,$hour){
         $result = $this->reserve->get();
 
         
-    //  echo $this->reserve->last_query();
+		$ilosc=self::getCourtCount($where['k.id_klienta']);
+		
+ // echo $this->reserve->last_query();
 
 			$array = array();
 			
 			$zajete = array();
       
-			$ilosc='';
+		
 			
 			
        
             foreach ($result->result() as $row) {
                 
 			$zajete[$row->nr_kortu]=$row->nr_kortu;
-		 	$ilosc=(int)$row->ilosc_kortow;
+		 
 			
 	
 			}
@@ -125,9 +160,11 @@ public function insert_reservation($insert,$where){
 	
 		$array=array();
 	
-		$this->reserve->select("id");
+		$this->reserve->select("k.id");
 		
-        $this->reserve->from("a_korty");
+        $this->reserve->from("a_korty k");
+		
+		$this->reserve->join("a_reserv_history h","k.id=h.id_reserv","left");
 
 		$this->reserve->where($where);
 	
@@ -168,7 +205,7 @@ public function insert_reservation($insert,$where){
 
 
 
-public function phone_verification($phone){
+public function phone_verification($where){
 	
 
 
@@ -176,22 +213,79 @@ public function phone_verification($phone){
 	
 		$this->reserve->select("id");
 		
-        $this->reserve->from("a_users");
+        $this->reserve->from("a_players");
 
-		$this->reserve->where("telefon='$phone'");
+		$this->reserve->where($where);
 	
 		$result = $this->reserve->get();
 		
-		if($result->num_rows()>0){
-		return 'ok';
-		}else
+		$array=array();
+		foreach($result->result() as $row){
+		
+	 	$array[]=	$row->id;
+		
+		
+		}
+		
+		
+	if(count($array)>0)
+		return $array;
+	else
 		return 'brak';
-	
 
 }
 
 
+public function insertNewPlayer($insert,$where){
+	
 
+	
+	
+	
+	
+	
+		$array=array();
+	
+		$this->reserve->select("phone");
+		
+        $this->reserve->from("a_players");
+
+		$this->reserve->where($where);
+	
+		$result = $this->reserve->get();
+		
+		if($result->num_rows()>0){
+			
+		$array['message']='<strong>Uwaga!</strong> Podany numer telefonu jest już w bazie';
+		$array['status']='danger';
+
+		
+		return $array;
+	}
+	
+		$this->reserve->insert('a_players', $insert);
+
+
+    //echo $this->reserve->affected_rows();
+    //  echo $this->reserve->last_query();
+
+	 if($this->reserve->affected_rows() == 1){
+		 
+		 $array['message']='<strong>Powodzenie!</strong> Użytkownik dodany pomyślnie.';
+		 $array['status']='success';
+
+	 } else{
+		 
+		 $array['message']='<strong>Błąd!</strong> Coś poszło nie tak, prosze odświeżyc strone i spróbować ponownie';
+		 $array['status']='danger';
+		 
+		 
+	 }
+	
+		return $array;
+			
+	
+}
 
 
 

@@ -77,9 +77,9 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	//'dsn'	=> '',
-	'dsn'=> 'mysql:host=mysql55-30.perso;dbname=:)',
-	'username' => ':)',
-	'password' => ':)',
+	'dsn'=> 'mysql:host=mysql55-30.perso;dbname=swiatrakeikord93',
+	'username' => 'swiatrakeikord93',
+	'password' => 'Kordzik123',
 	'dbdriver' => 'pdo',
 	'dbprefix' => '',
 	'pconnect' => FALSE,

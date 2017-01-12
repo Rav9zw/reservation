@@ -17,6 +17,8 @@ class Admin extends CI_Controller {
     public function index() {
 
 		$dane['site']='reservation';
+		$dane['js']='admin';
+		$dane['admin_active']='active';
 
 		$this->load->view('admin/master', $dane);
 
@@ -25,7 +27,7 @@ class Admin extends CI_Controller {
 	
 	public function admin_available_courts(){
 
-
+	
 	//tworznie tablicy do rezerwacji
 	
 		$client=$this->input->post('client');
@@ -33,54 +35,79 @@ class Admin extends CI_Controller {
 		$date_start=$this->input->post('date_start');
 		$date_start=date( "Y-m-d", strtotime( "$date_start $sub day" ) );
 		
-		$date = new DateTime($date_start.' 07:00:00');
+	
+	
+		$where=array('client_id'=>$client,
+					 'day'=>date('N',strtotime($date_start))
+					 );
+	
 	
 
+		$config=$this->Admin_model->getConfigHours($where);
+		
+		$min=$config['extremes']['min'];
+		$max=$config['extremes']['max'];
+		
+		$date = new DateTime($date_start.' '.$min.':00:00');
+	
 
-		for($i=7;$i<23;$i++){
+	
+		for($i=$min;$i<=$max;$i++){
+		
+
+
+			for($j=1;$j<=4;$j++){
+			$data['table'][$date->format('H:i')]['kort '.$j]['text']='';
 			
-		$date->modify('+1 hour');
-
-		for($j=1;$j<=4;$j++){
-		$data['table'][$date->format('H:i')]['kort '.$j]['text']='';
+			$data['table'][$date->format('H:i')]['kort '.$j]['lvl']=9;
+			
 		
-		$data['table'][$date->format('H:i')]['kort '.$j]['lvl']=9;
+
+			
+			}
+			
 	
+			if(isset($config['halfs'][$i]) || isset($config['halfs'][$i-1]))	
+			$date->modify('+30 minutes');
+			else
+			$date->modify('+1 hour');
 
 		}
 		
-	
-
-		}
-		$date->modify('-7 hour');
+		
+		
+		
+		
 
 
 		
 		
 		$where=array(
+		
+		'h.id_reserv'=>null,
 		'k.id_klienta'=>$client,
 		'data='=>$date_start,
+	
 		
-		
-		
+	
 		);
 		
 		//wyciąganie danych o dostępności kortów
 		$result=$this->Admin_model->get_available_courts($where);
-		$data['players']=$this->Admin_model->getPlayers();
+	
 		
 		
 			//matchowanie talicy z dostępnością
 
 
-			foreach ($data['table'] as $key=>$row){
+			foreach ($data['table'] as $key=>$row)
+			{
 
 			if(array_key_exists($key,$result))
-				$data['table'][$key]=array_merge($row,$result[$key]);
-
-					
+				$data['table'][$key]=array_merge($row,$result[$key]);	
+				
 			}
-			
+			$data['config']=$config;
 			
 			
 		
@@ -90,13 +117,26 @@ class Admin extends CI_Controller {
 
 
 	}
+	
+	public function getPlayers(){
+		
 
+		$data['players']=$this->Admin_model->getPlayers();
+
+	
+		echo json_encode($data);
+		
+	
+	}
+		
+		
 		public function insert_reservation(){
 			
 		$date_time=date('Y-m-d H:i:s');
 		$client=$this->input->post('client');
 		$court=$this->input->post('court');
 		$player=$this->input->post('player');
+		$comment=$this->input->post('comment');
 		$day=$this->input->post('day');
 		$hour=$this->input->post('hour');
 		
@@ -109,6 +149,7 @@ class Admin extends CI_Controller {
 			'godzina'=>$hour,
 			'data'=>$day,
 			'telefon'=>$player,
+			'notatka'=>$comment,
 			'typ_rezerwacji'=>0
 						
 			);
@@ -124,9 +165,25 @@ class Admin extends CI_Controller {
 						
 			);
 			
+			
+			$weekday=date('N',strtotime($day));
+			
+			
+			$whereHalf=array(
+			
+			
+			'client_id'=>$client,	
+			'substr(hour,1,2)'=>substr($hour,0,2),
+			'day'=>$weekday,
+			'end'=>'2100-01-01',
+			'value'=>1
+		
+						
+			);
+			
 
 		//wrzucanie nowej rezerwacji
-		$result['result']=$this->Admin_model->insert_reservation($insert,$where);
+		$result['result']=$this->Admin_model->insert_reservation($insert,$where,$whereHalf);
 			
 
 		
@@ -152,18 +209,118 @@ class Admin extends CI_Controller {
 		//wyciąganie danych o rezerwacji
 		$data['dane']=$this->Admin_model->getReservationDetails($where);
 		
-		$data['players']=$this->Admin_model->getPlayers();
+		
 		
 		echo json_encode($data);	
 
 
 		}
 	
+		public function insertNewPlayer()
+		{
+			
+		$registered=date('Y-m-d');
+		$phone=$this->input->post('phone');
+		$surname=$this->input->post('surname');
+		$name=$this->input->post('name');
+		$email=$this->input->post('email');
+		
+		
+		
+			$insert=array(
+			
+			'phone'=>$phone,
+			'surname'=>$surname,
+			'name'=>$name,
+			'email'=>$email,
+			'registered'=>$registered
+						
+			);
+	
+	
+			
+			$where=array(
+			
+			
+			'phone'=>$phone
+		
+						
+			);
+			
+
+		//wrzucanie nowej rezerwacji
+		$result['result']=$this->Admin_model->insertNewPlayer($insert,$where);
+			
+
+		
+		echo json_encode($result);	
+			
+			
+			
+			
+		}	
+	
+	
+	public function deleteReservation()
+		{
+			
+		
+		$id=$this->input->post('id');
+		
+		
+		
+			$insert=array(
+			
+			'id_reserv'=>$id
+			
+						
+			);
+	
+
+		
+		$result['result']=$this->Admin_model->deleteReservation($insert);
+			
+
+		
+		echo json_encode($result);	
+			
+			
+			
+			
+		}	
 	
 	
 	
+		public function updateReservation()
+		{
+			
+		
+		$id=$this->input->post('id');
+		
+		
+		
+			$insert=array(
+			
+			'id_reserv'=>$id
+			
+						
+			);
 	
+
 	
+		$result['result']=$this->Admin_model->deleteReservation($insert);
+			
+
+		
+		echo json_encode($result);	
+			
+		$player=$this->input->post('player');
+			
+			
+		
+		
+		
+		}
 
 
 

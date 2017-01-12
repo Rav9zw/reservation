@@ -50,7 +50,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 	
 	?>
 	
-<script src="<?php echo base_url(); ?>static/js/user/user.js"></script>  
+<script src="<?php echo base_url(); ?>static/js/user/user.js?v=<?php echo time();?>"></script>  
   
 </body>
 

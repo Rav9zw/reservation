@@ -38,8 +38,11 @@ $('#message_reservation').addClass('hidden');
 $('.phone').val('');
 $('#reservation_button').removeClass('hidden');
 $('.cancelation').removeClass('hidden');
+$('.main').removeClass('hidden');
 $('.confirmation').addClass('hidden');
+$('.user_new_user').addClass('hidden');
 $('#regulamin').prop('checked', false); // Unchecks it
+
    
    
 })
@@ -163,10 +166,37 @@ $("#main_table").on("click", ".td_click", function(){
 			
 			
 			
-			insert_reservation(client,court,phone,regulamin,day,hour);
+			check_phone(phone,court,day,hour,regulamin);
 		
 			
 			});		
+			
+	$(".modal").on("click", "#save_user_new_user", function(){
+
+
+				var phone=$('#user_new_phone').val();
+				var surname=$('#user_new_surname').val();
+				var name=$('#user_new_name').val();
+				var email=$('#user_new_email').val();
+				
+				
+				
+				insert_new_player(phone,surname,name,email);
+			
+				
+				});				
+			
+	$(".modal").on("click", "#back_user_new_user", function(){
+
+
+				$('.user_new_user').addClass('hidden').hide().fadeIn('slow');
+				$('.main').removeClass('hidden').hide().fadeIn('slow');;	
+			
+				
+				});				
+			
+			
+		
 			
 //ajax //////////////////////////////////////////////////////////////////////
 			
@@ -359,7 +389,7 @@ $.ajax({
 
 
 //wypełnianie modala za dany dzień
-function 	insert_reservation(client,court,phone,regulamin,day,hour){
+function 	insert_reservation(client,court,player,regulamin,day,hour){
 
 
 
@@ -372,7 +402,7 @@ $.ajax({
             data: {
             client:client,
             court:court,
-            phone:phone,
+            player:player,
 			day:day,
 			hour:hour
 			},
@@ -431,6 +461,132 @@ $.ajax({
 }
 
 //koniec ajaxa do wypełniania modala
+
+//sprawdzamy czy użytkownik jest juz w bazie
+function 	check_phone(phone,court,day,hour,regulamin){
+
+
+
+$.ajax({
+            url: "index.php/user/checkPhone",
+//          async: false,
+            async: true,
+            method: 'post',
+            dataType: "json",
+            data: {
+          
+            phone:phone
+			
+			},
+            beforeSend: function() {
+
+        
+            },
+
+            success: function(dane) {
+			
+			if(dane=='brak'){
+				$('.user_new_user').removeClass('hidden').hide().fadeIn('slow');
+				$('.main').addClass('hidden').hide().fadeIn('slow');
+				$('#user_new_phone').val($('#phone_reserv').val());
+				
+			}
+			else{
+				insert_reservation(client,court,dane[0],regulamin,day,hour);
+			}
+			
+		
+			  },
+            
+          
+ 
+            });
+
+
+			
+
+
+
+}
+
+
+
+
+
+function 	insert_new_player(phone,surname,name,email){
+
+
+
+$.ajax({
+            url: "index.php/user/insertNewPlayer",
+//          async: false,
+            async: true,
+            method: 'post',
+            dataType: "json",
+            data: {
+				
+            phone:phone,
+            surname:surname,
+            name:name,
+			email:email
+			
+			
+			},
+            beforeSend: function() {
+				
+
+            },
+
+            success: function(dane) {
+			
+			
+				$('#message_user_new_user').removeClass('alert-danger');
+			
+				console.log(dane.result.message);
+			
+				$('#message_user_new_user').removeClass('hidden').hide().fadeIn('slow').html(dane.result.message);
+				
+				$('#message_user_new_user').addClass('alert-'+dane.result.status);
+		
+				if(dane.result.status=='success'){
+					
+				$('#save_user_new_user').addClass('hidden').hide().fadeIn('slow');
+				$('#back_user_new_user').removeClass('hidden').hide().fadeIn('slow');
+			
+				
+				
+				
+
+			}
+		
+		
+		
+		
+		
+		
+			  },
+            
+          
+ 
+            });
+
+
+			
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
