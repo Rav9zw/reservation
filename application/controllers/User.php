@@ -35,14 +35,26 @@ class User extends CI_Controller {
 		$date_start=$this->input->post('date_start');
 		$date_start=date( "Y-m-d", strtotime( "$date_start $sub day" ) );
 		$date_end=date( "Y-m-d", strtotime( "$date_start +6 day" ) );
-		$date = new DateTime($date_start.' 07:00:00');
+		
+	
+		$where=array('client_id'=>$client,
+					 'day'=>date('N',strtotime($date_start))
+					 );
+
+		$config=$this->User_model->getConfigHours($where);
+		
+		$min=$config['extremes']['min'];
+		$max=$config['extremes']['max'];
+		
+		$date = new DateTime($date_start.' '.$min.':00:00');
 	
 
-
-		for($i=7;$i<23;$i++){
-		$date->modify('+1 hour');
+	
+		for($i=$min;$i<=$max;$i++){
+		
 
 		for($j=1;$j<=7;$j++){
+			
 		$table[$date->format('H:i')][$date->format('Y-m-d')]['text']='Rezerwuj';
 		$table[$date->format('H:i')][$date->format('Y-m-d')]['lvl']=9;
 		$date->modify('+1 day');
@@ -50,9 +62,10 @@ class User extends CI_Controller {
 		}
 		$date->modify('-7 day');
 
-
+		$date->modify('+1 hour');
+		
 		}
-		$date->modify('-7 hour');
+	
 
 
 		
@@ -101,7 +114,7 @@ class User extends CI_Controller {
 			'h.id_reserv'=>null,
 			'k.id_klienta'=>$client,
 			'k.data'=>$day,
-			'k.godzina'=>$hour
+			'substr(k.godzina,1,2)'=>substr($hour,0,2)
 			
 			);
 			
@@ -153,6 +166,9 @@ class User extends CI_Controller {
 			'typ_rezerwacji'=>1
 						
 			);
+			
+			
+			$insert = $this->security->xss_clean($insert);
 			
 			$where=array(
 			
@@ -257,7 +273,7 @@ public function checkPhone()
 						
 			);
 	
-	
+		$insert = $this->security->xss_clean($insert);
 			
 			$where=array(
 			

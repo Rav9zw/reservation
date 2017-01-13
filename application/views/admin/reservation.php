@@ -6,6 +6,10 @@
         <h4 class="modal-title">Rezerwacja kortu</h4>
       </div>
       <div class="modal-body">
+	  
+	  
+	  
+	  
       <label for="player">Gracz</label>
 	  
 	  <div class="row">
@@ -17,6 +21,19 @@
 		<div class="col-lg-2">
 		<button id="admin_new_user_btn" data-toggle="tooltip" title="Nowy użytkownik" class="btn btn-success"><i class="fa fa-user-plus" aria-hidden="true"></i></button>
 		</div>
+		</div>
+		
+		
+		<label for="reservation_length">Czas</label>
+	  
+	  <div class="row">
+	  <div class="col-lg-12">
+	   <select id="reservation_length" class="select2 js-example-basic-single">
+		<option value="30">30min</option>
+		<option value="60">1h</option>
+		</select>
+		</div>
+		
 		</div>
 		
 	  <div class="form-group">
@@ -123,7 +140,9 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default basic" data-dismiss="modal">Anuluj</button>
+		
         <button type="button" id="delete_reserv" class="btn btn-danger">Usuń <i class="fa fa-trash" aria-hidden="true"></i></button>
+		
         <!-- <button type="button"  class="btn btn-primary">Zapisz <i class="fa fa-floppy-o" aria-hidden="true"></i></button> -->
       </div>
     </div><!-- /.modal-content -->

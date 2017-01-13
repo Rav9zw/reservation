@@ -42,7 +42,8 @@ $('.main').removeClass('hidden');
 $('.confirmation').addClass('hidden');
 $('.user_new_user').addClass('hidden');
 $('#regulamin').prop('checked', false); // Unchecks it
-
+$('#save_user_new_user').removeClass('hidden').hide().fadeIn('slow');
+$('#back_user_new_user').addClass('hidden').hide().fadeIn('slow');
    
    
 })
@@ -542,7 +543,7 @@ $.ajax({
 			
 				$('#message_user_new_user').removeClass('alert-danger');
 			
-				console.log(dane.result.message);
+				//console.log(dane.result.message);
 			
 				$('#message_user_new_user').removeClass('hidden').hide().fadeIn('slow').html(dane.result.message);
 				

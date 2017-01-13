@@ -67,9 +67,22 @@ class Admin extends CI_Controller {
 			}
 			
 	
-			if(isset($config['halfs'][$i]) || isset($config['halfs'][$i-1]))	
+			if(isset($config['halfs'][$i]))	{
+				
 			$date->modify('+30 minutes');
-			else
+			
+			for($j=1;$j<=4;$j++){
+			$data['table'][$date->format('H:i')]['kort '.$j]['text']='';
+			
+			$data['table'][$date->format('H:i')]['kort '.$j]['lvl']=9;
+			
+
+			}
+			
+			
+			$date->modify('+30 minutes');
+			
+			}else
 			$date->modify('+1 hour');
 
 		}
@@ -136,6 +149,7 @@ class Admin extends CI_Controller {
 		$client=$this->input->post('client');
 		$court=$this->input->post('court');
 		$player=$this->input->post('player');
+		$reservationLength=$this->input->post('reservation_length');
 		$comment=$this->input->post('comment');
 		$day=$this->input->post('day');
 		$hour=$this->input->post('hour');
@@ -153,6 +167,9 @@ class Admin extends CI_Controller {
 			'typ_rezerwacji'=>0
 						
 			);
+			
+			$insert = $this->security->xss_clean($insert);
+			
 			
 			$where=array(
 			
@@ -183,7 +200,7 @@ class Admin extends CI_Controller {
 			
 
 		//wrzucanie nowej rezerwacji
-		$result['result']=$this->Admin_model->insert_reservation($insert,$where,$whereHalf);
+		$result['result']=$this->Admin_model->insert_reservation($insert,$where,$whereHalf,$reservationLength);
 			
 
 		
@@ -236,7 +253,8 @@ class Admin extends CI_Controller {
 			'registered'=>$registered
 						
 			);
-	
+			
+			$insert = $this->security->xss_clean($insert);
 	
 			
 			$where=array(
@@ -275,7 +293,8 @@ class Admin extends CI_Controller {
 			
 						
 			);
-	
+			
+		$insert = $this->security->xss_clean($insert);
 
 		
 		$result['result']=$this->Admin_model->deleteReservation($insert);

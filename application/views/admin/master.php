@@ -120,7 +120,14 @@ $('#show_hide_menu_a').hide().fadeIn('slow').toggleClass("fa-times").toggleClass
    });
    
    
-  $('[data-toggle="tooltip"]').tooltip();    
+  $('[data-toggle="tooltip"]').tooltip();   
+
+
+$('.config a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+  
 });
 	
     </script>

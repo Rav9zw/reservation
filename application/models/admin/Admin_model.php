@@ -257,7 +257,8 @@ private function checkForHalfs($where){
 }
 
 
-public function insert_reservation($insert,$where,$whereHalf){
+public function insert_reservation($insert,$where,$whereHalf,$reservationLength)
+{
 	
 		$isFree=self::checkForReservation($where);
 		
@@ -271,7 +272,7 @@ public function insert_reservation($insert,$where,$whereHalf){
 		$array['message']='<strong>Kort zajęty!</strong> Kort zarezerwowany przez innego użytkownika';
 		$array['status']='danger';
 
-		
+
 		return $array;
 		}
 	
@@ -281,7 +282,8 @@ public function insert_reservation($insert,$where,$whereHalf){
 		
 		$isFreeHalf=self::checkForReservation($where);
 		
-		if($isFreeHalf>0){
+		
+		if($isFreeHalf>0 && $reservationLength=='60'){
 			
 		$array['message']='<strong>Kort zajęty!</strong> Kort dostępny tylko pierwsze 30min';
 		$array['status']='danger';
@@ -294,7 +296,7 @@ public function insert_reservation($insert,$where,$whereHalf){
 
 		$this->reserve->insert('a_korty', $insert);
 		
-		if($isHalf>0){	
+		if($isHalf>0 && $reservationLength=='60'){	
 		
 		$insert['id_parent']=$this->reserve->insert_id();
 				

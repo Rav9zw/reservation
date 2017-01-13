@@ -19,7 +19,7 @@ border-radius:0!important;
 height:100px;
 font-size:15px;
 color:white;
-background-color:#78909c;
+background-color:#00695c ;
 text-align: center;
 vertical-align: middle;
 
@@ -38,7 +38,7 @@ width:21%;
 #admin_main_table tr td:first-child {
 	
 font-size:15px;
-color:#78909c;
+color:#00695c ;
 background-color:white;
 width:5%;
 }
@@ -54,7 +54,7 @@ margin-top:10px;
 
 .navmenu {
 
-background-color:#78909c  !important;  
+background-color:#00695c   !important;  
 padding-top: 50px;
 }
 
@@ -136,8 +136,8 @@ margin-left: 15px;
 
 	overflow:hidden;
 	margin:0;
-	background-color:#78909c  !important;  
-	color:#78909c  !important;  
+	background-color:#00695c   !important;  
+	color:#00695c   !important;  
 	border-radius: 0px;
 	border:0;
 }
@@ -178,16 +178,31 @@ margin-left: 15px;
 	
 }
 
+
+
 #admin_main_table td{
 	padding:5px!important;
 }
 
 
-.alert_reserv{
+table .alert_reserv{
  height:100px;
  margin-bottom:0!important;
 	
 	
+}
+
+
+table .alert-info{
+
+background-color:#008ad0!important;
+color:white!important;
+}
+
+table .alert-success{
+
+background-color:#11c080!important;
+color:white!important;
 }
 
 #table_loader{
@@ -206,7 +221,7 @@ margin-left: 15px;
 height:55px;
 
 color:white;
-background-color:#78909c;
+background-color:#00695c ;
 text-align: center;
 vertical-align: middle;
 
@@ -230,7 +245,7 @@ vertical-align: middle;
 #table_working_hours tr td:first-child {
 	
 font-size:15px;
-color:#78909c;
+color:#00695c ;
 background-color:white;
 width:5%;
 }
@@ -243,17 +258,36 @@ width:5%;
 	
 }
 
+.tab-pane{
 
+ margin-top:15px;
 
+	
+	
+}
+.legend_config{
+	
+ margin:10px;
+	
+}
 
+.fa-circle{
 
+color:#66bb6a;	
+	
+}
 
+.fa-adjust{
 
+color:#ffa726;	
+	
+}
 
+.fa-times{
 
-
-
-
+color:#ef5350;	
+	
+}
 
 
 /* Fixy IE...*/

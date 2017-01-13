@@ -187,6 +187,8 @@ $("#main_table").on("click", ".td_click", function(){
 			
 			var player=$('#player').val();
 			
+			var reservation_length=$('#reservation_length').val(); 
+			
 			var comment=$('#comment').val();
 			
 			var day=$(this).data('day');
@@ -198,7 +200,7 @@ $("#main_table").on("click", ".td_click", function(){
 			
 			
 			
-			insert_reservation(client,court,player,comment,day,hour);
+			insert_reservation(client,court,player,reservation_length,comment,day,hour);
 		
 			
 			});	
@@ -425,7 +427,7 @@ $.ajax({
 
 
 
-function 	insert_reservation(client,court,player,comment,day,hour){
+function 	insert_reservation(client,court,player,reservation_length,comment,day,hour){
 
 
 
@@ -439,6 +441,7 @@ $.ajax({
             client:client,
             court:court,
             player:player,
+			reservation_length:reservation_length,
             comment:comment,
 			day:day,
 			hour:hour
