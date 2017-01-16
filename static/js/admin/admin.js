@@ -17,7 +17,10 @@ var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 	 
 	 
 	 
-	 
+	if($(this).data('ishalf')=='undefined')
+	$('.time_row').addClass('hidden');
+
+	
 	$('#save_admin_reservation').data('day',day);
 	$('#save_admin_reservation').data('court',court);
 	$('#save_admin_reservation').data('hour',hour); 
@@ -81,10 +84,11 @@ $('.messages').addClass('hidden');
 $('.confirm').addClass('hidden');
 $('.basic').removeClass('hidden');
 
+$('.time_row').removeClass('hidden');
 
 $('#comment').val('');
 
-
+$('#message_penalty').addClass('hidden');	
 
    
    
@@ -259,6 +263,18 @@ $("#main_table").on("click", ".td_click", function(){
 			
 			$(".modal").on("click", "#delete_reserv", function(){
 				
+			var date_start=$('#start_date').val();	
+			
+			var hour=$(this).data('hour');;
+			
+			var now=new Date();	
+			var reservtime=new Date(date_start+' '+hour);	
+			
+			
+			//anulowanie ponizej 24h
+			if((reservtime-now)<86400000)
+			$('#message_penalty').removeClass('hidden');	
+		
 				
 			var id=$(this).data('id');	
 				
@@ -278,7 +294,19 @@ $("#main_table").on("click", ".td_click", function(){
 				
 			var id=$(this).data('id');	
 			
-			delete_reservation(id);
+			if($('#message_penalty').hasClass('hidden'))
+			var penalty=0;
+			else
+			var penalty=1;
+		
+			var reason=$('#delete_reason').val();
+			
+			var reservation_comment=$('#delete_reason_comment').val();
+			
+			var reservation_user=$('#delete_reason_user').val();
+		
+		
+			delete_reservation(id,penalty,reason,reservation_comment,reservation_user);
 			
 			
 			
@@ -368,16 +396,21 @@ $.ajax({
 						tabela+='<tr><td>'+i+'</td>';
 							$.each(this,function(k){
 						
+					
 						
+					if (typeof dane.config.halfs != "undefined") {
+						var godzina=Number(i.substring(0,2));
+						var isHalf=dane.config.halfs[godzina];
+					}
 						
 							if(this.lvl==9)
 							{
-									tabela+='<td  data-availability="free" data-hour="'+i+'" data-court="'+k+'" class="td_free td_click">'+this.text+'</td>';
+									tabela+='<td  data-ishalf="'+isHalf+'" data-availability="free" data-hour="'+i+'" data-court="'+k+'" class="td_free td_click">'+this.text+'</td>';
 							
 							
 							}else{
 								
-									tabela+='<td data-id="'+this.id+'" data-availability="occupied" data-hour="'+i+'" data-court="'+k+'" class="td_occupied td_click">'+this.text+'</td>';
+									tabela+='<td data-ishalf="'+isHalf+'" data-id="'+this.id+'" data-availability="occupied" data-hour="'+i+'" data-court="'+k+'" class="td_occupied td_click">'+this.text+'</td>';
 								
 							}
 									
@@ -396,17 +429,8 @@ $.ajax({
 			}
 			else
 			$('#admin_main_table').html(tabela);
-
-			//uzupełniam graczy w modalu
 			
-	
-			
-			
-			
-			
-
-			
-			
+						
 			
 			
 			
@@ -601,6 +625,7 @@ $.ajax({
 			
 			
 			$('#delete_reserv').data('id',id);
+			$('#delete_reserv').data('hour',dane.dane.hour);
 			
 			
 			$('#admin_edit_reservation').modal();
@@ -675,7 +700,7 @@ $.ajax({
 }
 
 
-function 	delete_reservation(id){
+function 	delete_reservation(id,penalty,reason,reservation_comment,reservation_user){
 
 
 
@@ -686,7 +711,11 @@ $.ajax({
             method: 'post',
             dataType: "json",
             data: {
-			id:id
+			id:id,
+			penalty:penalty,
+			reason:reason,
+			reservation_comment:reservation_comment,
+			reservation_user:reservation_user
 			},
             beforeSend: function() {
 				

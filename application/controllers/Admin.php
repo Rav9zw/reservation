@@ -284,12 +284,20 @@ class Admin extends CI_Controller {
 			
 		
 		$id=$this->input->post('id');
+		$penalty=$this->input->post('penalty');
+		$reason=$this->input->post('reason');
+		$reservation_comment=$this->input->post('reservation_comment');
+		$reservation_user=$this->input->post('reservation_user');
 		
 		
 		
 			$insert=array(
 			
-			'id_reserv'=>$id
+			'id_reserv'=>$id,
+			'penalty'=>$penalty,
+			'reason'=>$reason,
+			'reservation_comment'=>$reservation_comment,
+			'reservation_user'=>$reservation_user,
 			
 						
 			);

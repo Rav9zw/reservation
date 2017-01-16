@@ -38,8 +38,8 @@ class User extends CI_Controller {
 		
 	
 		$where=array('client_id'=>$client,
-					 'day'=>date('N',strtotime($date_start))
-					 );
+					 'value'=>'0',
+					 'end'=>'2100-01-01');
 
 		$config=$this->User_model->getConfigHours($where);
 		
@@ -48,15 +48,25 @@ class User extends CI_Controller {
 		
 		$date = new DateTime($date_start.' '.$min.':00:00');
 	
-
+		$polishWeek = array( 'Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota' );
 	
 		for($i=$min;$i<=$max;$i++){
 		
 
 		for($j=1;$j<=7;$j++){
 			
-		$table[$date->format('H:i')][$date->format('Y-m-d')]['text']='Rezerwuj';
-		$table[$date->format('H:i')][$date->format('Y-m-d')]['lvl']=9;
+		$week=$polishWeek[$date->format('w')];
+			
+		if(isset($config['work'][$date->format('H:i')][$j]) )
+		{
+		$table[$date->format('H:i')][$date->format('Y-m-d').'<br>'.$week]['text']='Zamknięte';
+		$table[$date->format('H:i')][$date->format('Y-m-d').'<br>'.$week]['lvl']=2;
+		}
+		else
+		{
+		$table[$date->format('H:i')][$date->format('Y-m-d').'<br>'.$week]['text']='Rezerwuj';
+		$table[$date->format('H:i')][$date->format('Y-m-d').'<br>'.$week]['lvl']=9;
+		}
 		$date->modify('+1 day');
 
 		}

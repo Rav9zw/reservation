@@ -24,9 +24,9 @@
 		</div>
 		
 		
-		<label for="reservation_length">Czas</label>
+		<label class="time_row" for="reservation_length">Czas</label>
 	  
-	  <div class="row">
+	  <div  class="row time_row">
 	  <div class="col-lg-12">
 	   <select id="reservation_length" class="select2 js-example-basic-single">
 		<option value="30">30min</option>
@@ -149,26 +149,50 @@
 	
 	
 	    <div class="modal-content hidden" id="cancel_reservation">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Rezerwacja kortu</h4>
-      </div>
-      <div class="modal-body">
-      <label for="player_edit">Powód anulowania rezerwacji</label>
-	   <select id="delete_reason" class="form-control">
-		<option>Rezygnacja klienta</option>
-		<option>Błąd</option>
-		</select>
-	  <div class="form-group">
-	  <label for="comment">Komentarz do anulowanej rezerwacji:</label>
-	  <textarea class="form-control" rows="3" id="delete_reason_comment"></textarea>
-	  </div>
-	  
-	  <div class="alert alert-success hidden messages" id="message_delete_reservation">
+		  <div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+			<h4 class="modal-title">Anulowanie rezerwacji</h4>
+		  </div>
+		  <div class="modal-body">
+		
+		<div class="alert alert-danger hidden" id="message_penalty">
+		
+		<strong>Uwaga! </strong>
+		
+		Zbyt późno anulowana rezerwacja, zostanie naliczona opłata karna. <button data-toggle="tooltip" title="Anuluj kare"  class="btn btn-warning"><i style="color:white;" class="fa fa-times" aria-hidden="true"></i></button>
 
-</div>
-	  
-      </div>
+		</div>
+			
+			
+	
+		
+		  <label for="player_edit">Powód anulowania rezerwacji</label>
+		   <select id="delete_reason" class="form-control">
+			<option>Rezygnacja klienta</option>
+			<option>Błąd</option>
+			</select>
+	
+		
+		
+		
+		
+	
+		 <div class="form-group row_user_comment">
+		  <label for="delete_reason_user">Komentarz do użytkownika:</label>
+		  <textarea class="form-control" rows="3" id="delete_reason_user"></textarea>
+		  </div>
+		
+		 
+		  <div class="form-group">
+		  <label for="delete_reason_comment">Komentarz do anulowanej rezerwacji:</label>
+		  <textarea class="form-control" rows="3" id="delete_reason_comment"></textarea>
+		  </div>
+		  
+		  <div class="alert alert-success hidden messages" id="message_delete_reservation">
+
+			</div>
+		  
+		  </div>
       <div class="modal-footer">
         <button type="button" id="admin_delete_cancel" class="btn btn-default basic" data-dismiss="modal">Anuluj</button>
 		<button type="button" id="admin_delete_back" class="btn btn-warning">Cofnij</button>

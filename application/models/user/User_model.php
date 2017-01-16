@@ -21,7 +21,9 @@ $this->reserve = $this->load->database('default', TRUE);
 public function get_available_courts($where){
 	
 	
-		$this->reserve->select("count(*)zarezerwowanych,k.nr_kortu,k.id,k.id_parent,k.data, k.id_klienta ,concat(TIME_FORMAT(k.godzina,'%H'),':00')godzina,c.ilosc_kortow");
+		$this->reserve->select("count(*)zarezerwowanych,
+		k.nr_kortu,k.id,k.id_parent,k.data, k.id_klienta ,
+		concat(TIME_FORMAT(k.godzina,'%H'),':00')godzina,c.ilosc_kortow");
 		
         $this->reserve->from("a_korty k");
 
@@ -46,25 +48,28 @@ public function get_available_courts($where){
 	  
 			$arraycalc[$row->godzina][$row->data]['zarezerwowane'][$row->nr_kortu]=1;
 			$arraycalc[$row->godzina][$row->data]['ilosc_kortow']=$row->ilosc_kortow;
+		
 			
 			}
 			
 		
-			
+			$polishWeek = array( 'Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota' );
        
             foreach ($arraycalc as $key=>$row) {
              
 
 				foreach($row as $k=>$r){
-				
+					
+				$week=$polishWeek[date('w',strtotime($k))];
 			 
+					
 						if( count($r['zarezerwowane'])==$r['ilosc_kortow'] ){
-						$array[$key][$k]['text']='Zarezerwowane';
-						$array[$key][$k]['lvl']=0;
+						$array[$key][$k.'<br>'.$week]['text']='Zarezerwowane';
+						$array[$key][$k.'<br>'.$week]['lvl']=0;
 					
 						}elseif( $r['ilosc_kortow']-count($r['zarezerwowane'])==1 ){
-						$array[$key][$k]['text']='Rezerwuj<br>ostatni kort';
-						$array[$key][$k]['lvl']=1;
+						$array[$key][$k.'<br>'.$week]['text']='Rezerwuj<br>ostatni kort';
+						$array[$key][$k.'<br>'.$week]['lvl']=1;
 						}
 			
 			
@@ -167,46 +172,47 @@ public function get_available_courts_details($where){
 public function getConfigHours($where){
 	
 	
-	$this->reserve->select("substring(hour,1,2)hour,value");
+	$this->reserve->select("substring(hour,1,2)hour");
 		
 	$this->reserve->from("a_config_hour c");
 	
 	$this->reserve->where($where);
 	
+	$this->reserve->group_by('substring(hour,1,2)');
+	
+	$this->reserve->having('count(*)=7');
+	
 	$result=$this->reserve->get();
 	
 	$array=array();
 	
-	
-	
-
-	
 	foreach($result->result() as $row)
 	{
 		
-		if($row->value==0)
-		$array['work'][intval($row->hour)]=$row->value;
+		$array['work'][intval($row->hour)]=$row->hour;
 	
-		if($row->value==1)
-		$array['halfs'][intval($row->hour)]=$row->value;
-		
-		
 	}
 	
-			$array['extremes']['min']=0;	
+	
+	$array['extremes']['min']=0;	
+
+	
+	
+		$array['extremes']['min']=0;	
 			$min=true;
 			
 			for($i=0;$i<=23;$i++){
 			
 				if(isset($array['work'][$i]) && $min==true ){
 				 $array['extremes']['min']=$i+1;	
-				$min=true;
+				 $min=true;
 				}else
 				 $min=false;	
 			
 			
 			}
-			$array['extremes']['max']=23;	
+			
+		$array['extremes']['max']=23;	
 			$max=true;
 			
 			for($i=23;$i>=0;$i--){
@@ -218,8 +224,29 @@ public function getConfigHours($where){
 				 $max=false;	
 			
 			
-			}
+			}	
 	
+
+
+
+	$this->reserve->select("hour,day");
+		
+	$this->reserve->from("a_config_hour");
+	
+	$this->reserve->where($where);
+	
+	$result=$this->reserve->get();
+	
+
+	
+	foreach($result->result() as $row)
+	{
+		
+		$array['work'][$row->hour][$row->day]=true;
+	
+	}
+
+
 	
 	return $array;
 	

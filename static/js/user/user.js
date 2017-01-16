@@ -16,7 +16,7 @@ $('.datepicker').datepicker({
 		todayHighlight: true,
         autoclose: true,
 		weekStart:1,
-		 language: 'pl'
+		language: 'pl'
 		
 });
 $('.open-datepicker').click(function(event){
@@ -261,6 +261,10 @@ $.ajax({
 							if(this.lvl==9)
 							{
 									tabela+='<td data-availability="free" data-hour="'+i+'" data-day="'+k+'" class="td_free td_click">'+this.text+'</td>';
+							}else if(this.lvl==2){
+								
+									tabela+='<td  data-availability="closed" data-hour="'+i+'" data-day="'+k+'" class="td_closed">'+this.text+'</td>';
+								
 							}else if(this.lvl==1){
 							
 							

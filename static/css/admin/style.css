@@ -19,7 +19,7 @@ border-radius:0!important;
 height:100px;
 font-size:15px;
 color:white;
-background-color:#00695c ;
+background-color:#455a64 ;
 text-align: center;
 vertical-align: middle;
 
@@ -38,7 +38,7 @@ width:21%;
 #admin_main_table tr td:first-child {
 	
 font-size:15px;
-color:#00695c ;
+color:#455a64 ;
 background-color:white;
 width:5%;
 }
@@ -54,7 +54,7 @@ margin-top:10px;
 
 .navmenu {
 
-background-color:#00695c   !important;  
+background-color:#607d8b!important;  
 padding-top: 50px;
 }
 
@@ -136,8 +136,8 @@ margin-left: 15px;
 
 	overflow:hidden;
 	margin:0;
-	background-color:#00695c   !important;  
-	color:#00695c   !important;  
+	background-color:#607d8b    !important;  
+	color:#607d8b    !important;  
 	border-radius: 0px;
 	border:0;
 }
@@ -201,7 +201,7 @@ color:white!important;
 
 table .alert-success{
 
-background-color:#11c080!important;
+background-color:#009688 !important;
 color:white!important;
 }
 
@@ -221,7 +221,7 @@ color:white!important;
 height:55px;
 
 color:white;
-background-color:#00695c ;
+background-color:#455a64 ;
 text-align: center;
 vertical-align: middle;
 
@@ -245,7 +245,7 @@ vertical-align: middle;
 #table_working_hours tr td:first-child {
 	
 font-size:15px;
-color:#00695c ;
+color:#455a64 ;
 background-color:white;
 width:5%;
 }
