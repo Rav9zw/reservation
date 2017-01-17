@@ -18,7 +18,7 @@ class Config extends CI_Controller {
 
 		$dane['site']='config';
 		$dane['js']='config';
-		$dane['admin_active']='active';
+		$dane['config_active']='active';
 
 		$this->load->view('admin/master', $dane);
 

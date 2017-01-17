@@ -59,7 +59,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
       <ul class="nav navmenu-nav">
         <li class="<?echo @$admin_active; ?>"><a href="<?php echo base_url(); ?>index.php/admin">Rezerwacje</a></li>
         <li class="<?echo @$usersadministration_active; ?>"><a href="<?php echo base_url(); ?>index.php/usersadministration">Użytkownicy</a></li>
-        <li class="<?echo @$active; ?>"><a href="<?php echo base_url(); ?>index.php/config">Ustawienia</a></li>
+        <li class="<?echo @$config_active; ?>"><a href="<?php echo base_url(); ?>index.php/config">Ustawienia</a></li>
         
       </ul>
      

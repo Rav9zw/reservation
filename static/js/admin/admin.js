@@ -108,7 +108,9 @@ var date_start=$('#start_date').val();
 admin_available_courts(client,date_start,sub='0',1);
 
 setInterval(function(){ 
-admin_available_courts(client,date_start,sub='0');
+if($('#showdeleted').children('.fa').hasClass('fa-trash-o'))
+admin_available_courts(client,date_start,sub='0',0);
+
  }, 15000);
 
 
@@ -117,9 +119,10 @@ $('.panel_date').on('change', '.datepicker', function() {
 
 date_start=$('#start_date').val();
 
-
-admin_available_courts(client,date_start,sub='0',1);
-  
+if($('#showdeleted').children('.fa').hasClass('fa-trash-o'))
+admin_available_courts(client,date_start,sub='0',1,0);
+else
+admin_available_courts(client,date_start,sub='0',1,1);
   
 });
 
@@ -146,6 +149,23 @@ $('#start_date').datepicker('update', today);
 
 
 
+
+$("#admin_main_table").on("click", "#showdeleted", function(){
+
+			var faobject=$('#showdeleted').children('.fa');
+			
+		
+			var date_start=$('#start_date').val();
+			if(faobject.hasClass('fa-trash-o')){
+			admin_available_courts(client,date_start,sub='0',1,1);
+			}else{
+			admin_available_courts(client,date_start,sub='0',1,0);
+				
+				
+				
+			}
+			
+			});
 
 
 
@@ -338,9 +358,11 @@ $("#main_table").on("click", ".td_click", function(){
 	
 			
 //pobieranie informacji o dostępności kortów klubu za dany okres czasowy
-function admin_available_courts(client,date_start,sub,fade){
+function admin_available_courts(client,date_start,sub,fade,deleted){
 
  if (typeof(fade)==='undefined') fade = null;
+ if (typeof(deleted)==='undefined') deleted = null;
+
 
 $.ajax({
             url: "admin/admin_available_courts",
@@ -351,7 +373,8 @@ $.ajax({
             data: {
             client:client,
 			date_start:date_start,
-			sub:sub
+			sub:sub,
+			deleted:deleted
 			
 			},
             beforeSend: function() {
@@ -365,7 +388,7 @@ $.ajax({
             },
 
             success: function(dane) {
-				
+			
 				if(fade==1){
 				$('#table_loader').addClass('hidden');
 				$('#admin_main_table').removeClass('hidden');
@@ -375,9 +398,19 @@ $.ajax({
 				var first_key=Object.keys(dane.table)[0];
 				
 				
+				if(deleted==1)	{
+				var deletedfa='fa-eye';							
+				var deletedmess='aktywne';							
+				}else{
+				var deletedfa='fa-trash-o';	
+				var deletedmess='usunięte';	
+				}				
+				
+				var deletedbutton='<button id="showdeleted" style="background-color:#455a64" data-toggle="tooltip" title="Pokaż '+deletedmess+'" class="btn"><i class="fa fa-lg '+deletedfa+'" aria-hidden="true"></i></button>';	
+				
 				//rysowanie tablicy
 				var tabela='<table class="table table-bordered ">';
-					tabela+='<tr><th></th>';
+					tabela+='<tr><th>'+deletedbutton+'</th>';
 					
 				//nagłówek (dni)
 				$.each(dane.table[first_key],function(i){
@@ -408,9 +441,13 @@ $.ajax({
 									tabela+='<td  data-ishalf="'+isHalf+'" data-availability="free" data-hour="'+i+'" data-court="'+k+'" class="td_free td_click">'+this.text+'</td>';
 							
 							
-							}else{
+							}else if(this.lvl==0 || this.lvl==1){
 								
 									tabela+='<td data-ishalf="'+isHalf+'" data-id="'+this.id+'" data-availability="occupied" data-hour="'+i+'" data-court="'+k+'" class="td_occupied td_click">'+this.text+'</td>';
+								
+							}else if(this.lvl==2 || this.lvl==3){
+								
+									tabela+='<td data-ishalf="'+isHalf+'" data-id="'+this.id+'" data-hour="'+i+'" data-court="'+k+'" class="td_deleted td_click">'+this.text+'</td>';
 								
 							}
 									
@@ -430,7 +467,7 @@ $.ajax({
 			else
 			$('#admin_main_table').html(tabela);
 			
-						
+			$('#showdeleted').tooltip();   				
 			
 			
 			
@@ -496,7 +533,7 @@ $.ajax({
 				var date_start=$('#start_date').val();
 				
 				$('#admin_reservation').modal('hide');
-				admin_available_courts(client,date_start,sub='0');
+				admin_available_courts(client,date_start,sub='0',0);
 				
 
 				}else{
@@ -743,7 +780,7 @@ $.ajax({
 				var date_start=$('#start_date').val();
 				
 				
-				admin_available_courts(client,date_start,sub='0');
+				admin_available_courts(client,date_start,sub='0',0);
 		
 				}
 	

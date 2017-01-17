@@ -42,6 +42,16 @@ private function getReservationType($player,$type,$isNew,$latest,$notatka)
 		</div>";
 		break;
 		
+		case 2: $reservation="<div class='alert_reserv alert alert-warning' role='alert'><strong>$player</strong></br>
+		$notatka
+		</div>";
+		break;
+		
+		case 3: $reservation="<div class='alert_reserv alert alert-danger' role='alert'><strong>$player</strong></br>
+		$notatka
+		</div>";
+		break;
+		
 		default:$reservation="<div class='$animation alert_reserv alert alert-primary' role='alert'><strong>$player</strong></br>
 		$notatka
 		</div>";
@@ -63,8 +73,17 @@ public function get_available_courts($where){
 								(case when k.id_parent=0 then k.id
 								else k.id_parent
 								end)id,
-								k.data, k.id_klienta ,TIME_FORMAT(k.godzina,'%H:%i')godzina,c.ilosc_kortow,k.nr_kortu,k.telefon ,k.typ_rezerwacji,
-								(case when (TO_SECONDS(now())-TO_SECONDS(k.date_time))>300 or k.typ_rezerwacji=0 then 0
+								k.data, k.id_klienta ,TIME_FORMAT(k.godzina,'%H:%i')godzina,c.ilosc_kortow,k.nr_kortu,k.telefon ,
+								TO_SECONDS(STR_TO_DATE(concat(k.data,' ',k.godzina),'%Y-%m-%d %T'))dd,
+								(TO_SECONDS(h.delete_date)-TO_SECONDS(STR_TO_DATE(concat(k.data,' ',k.godzina),'%Y-%m-%d %T')))dt,
+									(
+								case 
+								when h.id_reserv is not null and (TO_SECONDS(STR_TO_DATE(concat(k.data,' ',k.godzina),'%Y-%m-%d %T'))-TO_SECONDS(h.delete_date))>86400 then 2
+								when h.id_reserv is not null and (TO_SECONDS(STR_TO_DATE(concat(k.data,' ',k.godzina),'%Y-%m-%d %T'))-TO_SECONDS(h.delete_date))<86400 then 3
+								else k.typ_rezerwacji
+								end)typ_rezerwacji,
+								(case 
+								when (TO_SECONDS(now())-TO_SECONDS(k.date_time))>300 or k.typ_rezerwacji=0 then 0
 								else 1
 								end)isNew,
 								(case when (select max(id) from a_korty n where k.id_klienta=n.id_klienta and k.typ_rezerwacji=0)=k.id 
@@ -72,6 +91,7 @@ public function get_available_courts($where){
 								then 1
 								else 0
 								end)latest,
+							
 								ifnull(concat(p.surname,' ',p.name),k.telefon)player,k.notatka
 								
 								");
@@ -97,10 +117,16 @@ public function get_available_courts($where){
 			$reservation=self::getReservationType($row->player,$row->typ_rezerwacji,$row->isNew,$row->latest,$row->notatka);
 
 			$array[$row->godzina]['kort '.$row->nr_kortu]['text']=$reservation;
+			$array[$row->godzina]['kort '.$row->nr_kortu]['lvl']=$row->typ_rezerwacji;
+		
 			$array[$row->godzina]['kort '.$row->nr_kortu]['id']=$row->id;
+			
+		
 		
 
 			}
+	
+
 	
 		return $array;
 		
@@ -303,6 +329,7 @@ public function insert_reservation($insert,$where,$whereHalf,$reservationLength)
 		$insert['godzina']=$hour->format('H:i:s');
 		$insert['notatka']='<i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i>';
 		
+		
 		$this->reserve->insert('a_korty', $insert);
 
 		}
@@ -476,12 +503,6 @@ public function deleteReservation($insert){
 	
 	$this->reserve->insert('a_reserv_history', $insert);
 
-
-	$halfId['id_reserv']=self::getHalfs($insert['id_reserv']);
-	
-	if($halfId)
-	$this->reserve->insert('a_reserv_history', $halfId);	
-
 	 if($this->reserve->affected_rows() == 1){
 		 
 		 $array['message']='<strong>Powodzenie!</strong> Rezerwacja usunięta';
@@ -494,6 +515,17 @@ public function deleteReservation($insert){
 		 
 		 
 	 }
+	
+	
+	$halfId['id_reserv']=self::getHalfs($insert['id_reserv']);
+	$halfId['delete_date']=$insert['delete_date'];
+	
+	
+
+	if($halfId['id_reserv'])
+	$this->reserve->insert('a_reserv_history', $halfId);	
+
+	
 	
 		return $array;
 			

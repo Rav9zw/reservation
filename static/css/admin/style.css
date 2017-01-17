@@ -35,6 +35,12 @@ width:21%;
 }
 
 
+#admin_main_table .td_click {
+	
+cursor:pointer;
+
+}
+
 #admin_main_table tr td:first-child {
 	
 font-size:15px;
@@ -182,6 +188,9 @@ margin-left: 15px;
 
 #admin_main_table td{
 	padding:5px!important;
+  overflow: hidden;
+  text-overflow: ellipsis;	
+	
 }
 
 
@@ -196,6 +205,18 @@ table .alert_reserv{
 table .alert-info{
 
 background-color:#008ad0!important;
+color:white!important;
+}
+
+table .alert-warning{
+
+background-color:#f0ad4e!important;
+color:white!important;
+}
+
+table .alert-danger{
+
+background-color:#d9534f!important;
 color:white!important;
 }
 

@@ -33,6 +33,7 @@ class Admin extends CI_Controller {
 		$client=$this->input->post('client');
 		$sub=$this->input->post('sub');
 		$date_start=$this->input->post('date_start');
+		$deleted=$this->input->post('deleted');
 		$date_start=date( "Y-m-d", strtotime( "$date_start $sub day" ) );
 		
 	
@@ -104,6 +105,14 @@ class Admin extends CI_Controller {
 		
 	
 		);
+		if($deleted==1){
+		
+		unset($where['h.id_reserv']);
+		
+		$where['h.id_reserv is not']=null;
+		
+			
+		}
 		
 		//wyciąganie danych o dostępności kortów
 		$result=$this->Admin_model->get_available_courts($where);
@@ -298,6 +307,8 @@ class Admin extends CI_Controller {
 			'reason'=>$reason,
 			'reservation_comment'=>$reservation_comment,
 			'reservation_user'=>$reservation_user,
+			'delete_date'=>date('Y-m-d H:i:s')
+		
 			
 						
 			);
