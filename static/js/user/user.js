@@ -244,7 +244,7 @@ $.ajax({
 				//nagłówek (dni)
 				$.each(dane[first_key],function(i){
 						
-					tabela+='<td>'+i+'</td>';
+					tabela+='<td>'+i+'</br>'+this.week+'</td>';
 
 					
 					});
@@ -257,6 +257,10 @@ $.ajax({
 						
 						tabela+='<tr><td>'+i+'</td>';
 							$.each(this,function(k){
+						
+							
+							
+						
 						
 							if(this.lvl==9)
 							{
@@ -363,7 +367,7 @@ $.ajax({
 			$('#reservation_modal').modal() 
 			
 			var options='';
-			$.each(dane,function(){
+			$.each(dane.courts,function(){
 			
 			options+='<option value="'+this+'">Kort '+this+'</option>';
 			
@@ -371,6 +375,8 @@ $.ajax({
 			});
 			
 			$('#court').html(options);
+			
+			$('#price').html(dane.price);
 		
 		
 		

@@ -140,6 +140,66 @@ class Admin extends CI_Controller {
 
 	}
 	
+	
+	
+	
+	public function Price(){
+			
+		$client=$this->input->post('client');
+		$day=$this->input->post('day');
+		$hour=$this->input->post('hour');
+			
+		
+			
+			
+			$weekDay=date('w',strtotime($day));
+			
+			$where=array(
+		
+			'client_id'=>$client,
+			'day'=>$weekDay,
+			'hour'=>$hour,
+			'end'=>'2100-01-01'
+			
+			);
+			
+	
+		$result=$this->Admin_model->getPrice($where);
+			
+			
+			
+		echo json_encode($result);	
+			
+			
+			
+			
+		}
+		
+		
+		
+		public function confirmRealisation(){
+			
+
+			$id=$this->input->post('id');
+			
+				$where=array(
+			
+					'id'=>$id
+				
+				);
+			
+	
+		$result=$this->Admin_model->confirmRealisation($where);
+			
+			
+			
+		echo json_encode($result);	
+			
+			
+			
+			
+		}
+	
 	public function getPlayers(){
 		
 

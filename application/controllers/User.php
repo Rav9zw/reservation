@@ -48,25 +48,29 @@ class User extends CI_Controller {
 		
 		$date = new DateTime($date_start.' '.$min.':00:00');
 	
-		$polishWeek = array( 'Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota' );
-	
+		$polishWeek = array( 1=> 'Poniedziałek',2=> 'Wtorek',3=> 'Środa', 4=> 'Czwartek',5=> 'Piątek',6=> 'Sobota',7=>'Niedziela' );
+		$polishWeekShort = array( 1=>'Pn',2=> 'Wt',3=> 'Śr',4=> 'Czw', 5=>'Pt', 6=>'So',7=>'Ndz' );
+
 		for($i=$min;$i<=$max;$i++){
 		
-
+		
 		for($j=1;$j<=7;$j++){
 			
-		$week=$polishWeek[$date->format('w')];
+		$week=$polishWeek[$date->format('N')];
+		$weekShort=$polishWeekShort[$date->format('N')];
 			
-		if(isset($config['work'][$date->format('H:i')][$j]) )
+		if(isset($config['work'][$date->format('H:i')][$weekShort]) )
 		{
-		$table[$date->format('H:i')][$date->format('Y-m-d').'<br>'.$week]['text']='Zamknięte';
-		$table[$date->format('H:i')][$date->format('Y-m-d').'<br>'.$week]['lvl']=2;
+		$table[$date->format('H:i')][$date->format('Y-m-d')]['text']=$weekShort.', '.$date->format('H:i').'</br>Zamknięte';
+		$table[$date->format('H:i')][$date->format('Y-m-d')]['lvl']=2;
 		}
 		else
 		{
-		$table[$date->format('H:i')][$date->format('Y-m-d').'<br>'.$week]['text']='Rezerwuj';
-		$table[$date->format('H:i')][$date->format('Y-m-d').'<br>'.$week]['lvl']=9;
+		$table[$date->format('H:i')][$date->format('Y-m-d')]['text']=$weekShort.', '.$date->format('H:i').'</br>Wolne';
+		$table[$date->format('H:i')][$date->format('Y-m-d')]['lvl']=9;
 		}
+		$table[$date->format('H:i')][$date->format('Y-m-d')]['week']=$week;
+		
 		$date->modify('+1 day');
 
 		}
@@ -130,8 +134,20 @@ class User extends CI_Controller {
 			
 			
 			
+			
+			$weekDay=date('w',strtotime($day));
+			
+			$wherePrice=array(
+		
+			'client_id'=>$client,
+			'day'=>$weekDay,
+			'hour'=>$hour,
+			'end'=>'2100-01-01'
+			
+			);
+			
 		//wyciąganie dostępnych kortów
-		$result=$this->User_model->get_available_courts_details($where);
+		$result=$this->User_model->get_available_courts_details($where,$wherePrice);
 			
 			
 			
@@ -181,8 +197,7 @@ class User extends CI_Controller {
 			$insert = $this->security->xss_clean($insert);
 			
 			$where=array(
-			
-			'h.id_reserv'=>null,
+
 			'id_klienta'=>$client,
 			'nr_kortu'=>$court,
 			'godzina'=>$hour,
@@ -191,7 +206,21 @@ class User extends CI_Controller {
 						
 			);
 			
+			
+			
+			$weekday=date('N',strtotime($day));
+			
+			$whereHalf=array(
+			
+			
+			'client_id'=>$client,	
+			'substr(hour,1,2)'=>substr($hour,0,2),
+			'day'=>$weekday,
+			'end'=>'2100-01-01',
+			'value'=>1
 		
+						
+			);
 			
 		
 			
@@ -199,7 +228,7 @@ class User extends CI_Controller {
 			
 			
 		//wrzucanie nowej rezerwacji
-		$result['result']=$this->User_model->insert_reservation($insert,$where);
+		$result['result']=$this->User_model->insert_reservation($insert,$where,$whereHalf);
 			
 		
 		

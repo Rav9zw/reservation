@@ -54,24 +54,27 @@ public function get_available_courts($where){
 			
 		
 			$polishWeek = array( 'Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota' );
-       
+			$polishWeekShort = array( 'Ndz', 'Pn', 'Wt', 'Śr', 'Czw', 'Pt', 'So' );
+			
             foreach ($arraycalc as $key=>$row) {
              
 
 				foreach($row as $k=>$r){
 					
 				$week=$polishWeek[date('w',strtotime($k))];
-			 
+			 	$weekShort=$polishWeekShort[date('w',strtotime($k))];
 					
 						if( count($r['zarezerwowane'])==$r['ilosc_kortow'] ){
-						$array[$key][$k.'<br>'.$week]['text']='Zarezerwowane';
-						$array[$key][$k.'<br>'.$week]['lvl']=0;
+						$array[$key][$k]['text']=$weekShort.', '.$key.'</br>Zarezerwowane';
+						$array[$key][$k]['lvl']=0;
+						$array[$key][$k]['week']=$week;
 					
 						}elseif( $r['ilosc_kortow']-count($r['zarezerwowane'])==1 ){
-						$array[$key][$k.'<br>'.$week]['text']='Rezerwuj<br>ostatni kort';
-						$array[$key][$k.'<br>'.$week]['lvl']=1;
+						$array[$key][$k]['text']=$weekShort.', '.$key.'</br>Ostatni kort';
+						$array[$key][$k]['lvl']=1;
+						$array[$key][$k]['week']=$week;
 						}
-			
+						
 			
 				}
 			
@@ -111,7 +114,7 @@ private function getCourtCount($client){
 }
 
 
-public function get_available_courts_details($where){
+public function get_available_courts_details($where,$wherePrice){
 	
 	
 		$this->reserve->select("k.nr_kortu");
@@ -151,7 +154,7 @@ public function get_available_courts_details($where){
 			for($i=1;$i<=$ilosc;$i++){
 			
 			
-			$array[$i]=$i;
+			$array['courts'][$i]=$i;
 			
 				
 			}
@@ -159,7 +162,33 @@ public function get_available_courts_details($where){
 	
 
 	
-	$array=array_diff($array,$zajete);
+	$array['courts']=array_diff($array['courts'],$zajete);
+	
+	
+	
+		$this->reserve->select("value");
+		
+        $this->reserve->from("a_config_price");
+
+		$this->reserve->where($wherePrice);
+
+		
+  
+        $result = $this->reserve->get();
+		$array['price']='Cena: 30 zł';
+	
+	
+	foreach($result->result() as $row)
+	{
+		
+		$array['price']='Cena: '.$row->value.' zł';
+		
+	}
+	
+	
+	
+	
+	
 	
 	
 	
@@ -185,6 +214,9 @@ public function getConfigHours($where){
 	$result=$this->reserve->get();
 	
 	$array=array();
+	
+	//echo $this->reserve->last_query();
+	
 	
 	foreach($result->result() as $row)
 	{
@@ -237,12 +269,12 @@ public function getConfigHours($where){
 	
 	$result=$this->reserve->get();
 	
-
+$polishWeekShort = array( 1=>'Pn',2=> 'Wt',3=> 'Śr',4=> 'Czw', 5=>'Pt', 6=>'So',7=>'Ndz' );
 	
 	foreach($result->result() as $row)
 	{
 		
-		$array['work'][$row->hour][$row->day]=true;
+		$array['work'][$row->hour][$polishWeekShort[$row->day]]=true;
 	
 	}
 
@@ -256,27 +288,63 @@ public function getConfigHours($where){
 }
 
 
-public function insert_reservation($insert,$where){
+private function checkForReservation($where){
+	
+	
+	
+	
+		$this->reserve->select("k.id");
+		
+        $this->reserve->from("a_korty k");
+
+		$this->reserve->join("a_reserv_history h","k.id=h.id_reserv","left");
+		
+		$this->reserve->where($where);
+		
+		$this->reserve->where('h.id_reserv is null');
+	
+		$result = $this->reserve->get();
+		
+		return $result->num_rows();
+		
+	
+}
+
+private function checkForHalfs($where){
+	
+	
+		
+	
+		$this->reserve->select("k.id");
+		
+        $this->reserve->from("a_config_hour k");
+		
+		$this->reserve->where($where);
+
+		$result = $this->reserve->get();
+		
+		//echo $this->reserve->last_query();
+		
+		return $result->num_rows();
+		
+	
+}
+
+
+public function insert_reservation($insert,$where,$whereHalf){
 	
 
 	
-	
+		$isFree=self::checkForReservation($where);
+		
+		$isHalf=self::checkForHalfs($whereHalf);
 	
 	
 	
 		$array=array();
 	
-		$this->reserve->select("k.id");
-		
-        $this->reserve->from("a_korty k");
-		
-		$this->reserve->join("a_reserv_history h","k.id=h.id_reserv","left");
-
-		$this->reserve->where($where);
 	
-		$result = $this->reserve->get();
-		
-		if($result->num_rows()>0){
+		if($isFree>0){
 			
 		$array['message']='<strong>Kort zajęty!</strong> Niestety ktoś Cie uprzedził, prosimy wybrać inną godzine/termin';
 		$array['status']='danger';
@@ -284,6 +352,24 @@ public function insert_reservation($insert,$where){
 		
 		return $array;
 	}
+	
+		$hour=new DateTime(date('Y-m-d').' '.$insert['godzina']);
+		$hour->modify('+30 minutes');
+		$where['godzina']=$hour->format('H:i:s');
+		
+		$isFreeHalf=self::checkForReservation($where);
+		
+		
+		if($isFreeHalf>0){
+			
+		$array['message']='<strong>Kort zajęty!</strong> Kort dostępny tylko pierwsze 30min, możliwość rezerwacji tylko telefonicznej';
+		$array['status']='danger';
+
+		
+		return $array;
+		}
+		
+		
 	
 		$this->reserve->insert('a_korty', $insert);
 
@@ -303,6 +389,22 @@ public function insert_reservation($insert,$where){
 		 
 		 
 	 }
+	
+		$isHalf=self::checkForHalfs($whereHalf);
+	
+		if($isHalf>0){	
+		
+		$insert['id_parent']=$this->reserve->insert_id();
+				
+		$insert['godzina']=$hour->format('H:i:s');
+		$insert['notatka']='<i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i>';
+		
+		
+		$this->reserve->insert('a_korty', $insert);
+
+		}
+	
+	
 	
 		return $array;
 			
@@ -372,8 +474,8 @@ public function insertNewPlayer($insert,$where){
 		$this->reserve->insert('a_players', $insert);
 
 
-    //echo $this->reserve->affected_rows();
-    //  echo $this->reserve->last_query();
+		//echo $this->reserve->affected_rows();
+		//  echo $this->reserve->last_query();
 
 	 if($this->reserve->affected_rows() == 1){
 		 

@@ -14,7 +14,7 @@ $this->reserve = $this->load->database('default', TRUE);
     }
 
 
-private function getReservationType($player,$type,$isNew,$latest,$notatka)
+private function getReservationType($player,$type,$isNew,$latest,$notatka,$cofirmed)
 {
 	
 							$animation='';
@@ -24,7 +24,17 @@ private function getReservationType($player,$type,$isNew,$latest,$notatka)
 							
 							if($isNew==1)
 							 $animation="animated  infinite pulse";
-						
+				
+	if($cofirmed==1)
+	{
+		
+	$confirmed='<i class="fa fa-check" aria-hidden="true"></i>'	;
+		
+	}
+	else
+		$confirmed=''	;
+
+					
 	
 	
 	//pozniej zrob tu zaciąganie z bazy, na przyszłośc może dla każdego klienta inne
@@ -32,27 +42,27 @@ private function getReservationType($player,$type,$isNew,$latest,$notatka)
 	switch($type){
 		
 		
-		case 0: $reservation="<div class='$animation alert_reserv alert alert-success' role='alert'><strong>$player</strong></br>
-		$notatka
+		case 0: $reservation="<div class='$animation alert_reserv alert alert-success' role='alert'><strong>$confirmed $player</strong></br>
+		$notatka<br>
 		</div>";
 		break;		
 		
-		case 1: $reservation="<div class='$animation alert_reserv alert alert-info' role='alert'><strong>$player</strong></br>
+		case 1: $reservation="<div class='$animation alert_reserv alert alert-info' role='alert'><strong>$confirmed $player</strong></br>
 		$notatka
 		</div>";
 		break;
 		
-		case 2: $reservation="<div class='alert_reserv alert alert-warning' role='alert'><strong>$player</strong></br>
+		case 2: $reservation="<div class='alert_reserv alert alert-warning' role='alert'><strong>$confirmed $player</strong></br>
 		$notatka
 		</div>";
 		break;
 		
-		case 3: $reservation="<div class='alert_reserv alert alert-danger' role='alert'><strong>$player</strong></br>
+		case 3: $reservation="<div class='alert_reserv alert alert-danger' role='alert'><strong>$confirmed $player</strong></br>
 		$notatka
 		</div>";
 		break;
 		
-		default:$reservation="<div class='$animation alert_reserv alert alert-primary' role='alert'><strong>$player</strong></br>
+		default:$reservation="<div class='$animation alert_reserv alert alert-primary' role='alert'><strong>$confirmed $player</strong></br>
 		$notatka
 		</div>";
 	}
@@ -72,7 +82,7 @@ public function get_available_courts($where){
 		$this->reserve->select("h.id history_id,
 								(case when k.id_parent=0 then k.id
 								else k.id_parent
-								end)id,
+								end)id,k.confirmed,
 								k.data, k.id_klienta ,TIME_FORMAT(k.godzina,'%H:%i')godzina,c.ilosc_kortow,k.nr_kortu,k.telefon ,
 								TO_SECONDS(STR_TO_DATE(concat(k.data,' ',k.godzina),'%Y-%m-%d %T'))dd,
 								(TO_SECONDS(h.delete_date)-TO_SECONDS(STR_TO_DATE(concat(k.data,' ',k.godzina),'%Y-%m-%d %T')))dt,
@@ -114,7 +124,7 @@ public function get_available_courts($where){
        
             foreach ($result->result() as $row) {
 
-			$reservation=self::getReservationType($row->player,$row->typ_rezerwacji,$row->isNew,$row->latest,$row->notatka);
+			$reservation=self::getReservationType($row->player,$row->typ_rezerwacji,$row->isNew,$row->latest,$row->notatka,$row->confirmed);
 
 			$array[$row->godzina]['kort '.$row->nr_kortu]['text']=$reservation;
 			$array[$row->godzina]['kort '.$row->nr_kortu]['lvl']=$row->typ_rezerwacji;
@@ -388,9 +398,11 @@ public function getReservationDetails($where){
 
 	
 	
-		$this->reserve->select("k.nr_kortu,k.data,k.godzina,k.notatka,k.telefon");
+		$this->reserve->select("k.nr_kortu,k.data,k.godzina,k.notatka,k.telefon,k.confirmed,ifnull(p.value,'30')value");
 		
         $this->reserve->from("a_korty k");
+		
+        $this->reserve->join("a_config_price p","TIME_FORMAT(k.godzina,'%H:%i')=p.hour and date_format(k.data,'%w')=p.day-1","left");
 				
 		$this->reserve->where($where);
 	
@@ -407,6 +419,8 @@ public function getReservationDetails($where){
 		$array['hour']=$row->godzina;	
 		$array['note']=$row->notatka;	
 		$array['player']=$row->telefon;	
+		$array['confirmed']=$row->confirmed;	
+		$array['price']='Cena: '.$row->value.' zł';
 			
 		;	
 			
@@ -531,6 +545,87 @@ public function deleteReservation($insert){
 			
 	
 }
+
+
+public function getPrice($where){
+	
+	
+	
+		$this->reserve->select("value");
+		
+        $this->reserve->from("a_config_price");
+
+		$this->reserve->where($where);
+
+		
+  
+        $result = $this->reserve->get();
+	
+
+ 	$array['price']='Cena: 30 zł';
+	
+	
+	foreach($result->result() as $row)
+	{
+		
+		$array['price']='Cena: '.$row->value.' zł';
+		
+	}
+	
+	return $array;
+}
+
+
+
+public function confirmRealisation($where){
+	
+
+	$data=array('confirmed'=>1);
+	
+		$this->reserve->set($data);
+		$this->reserve->where($where);
+		$this->reserve->update('a_korty');
+
+ 	
+		
+	//echo $this->reserve->last_query();
+	
+		$isHalf=self::getHalfs($where['id']);
+	
+	
+	
+	
+	if($isHalf){
+
+		$where['id']=$isHalf;
+		
+		$this->reserve->set($data);
+		$this->reserve->where($where);
+		$this->reserve->update('a_korty');
+
+	
+	}
+	
+		
+		return 1;
+
+	
+	
+	
+	
+	
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

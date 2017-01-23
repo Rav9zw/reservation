@@ -227,6 +227,7 @@ color:white!important;
 }
 
 #table_loader{
+	
     display: table;
     margin: 0 auto; 
 	margin-top:150px;
@@ -240,7 +241,6 @@ color:white!important;
 
 	
 height:55px;
-
 color:white;
 background-color:#455a64 ;
 text-align: center;
@@ -251,15 +251,11 @@ vertical-align: middle;
 #table_working_hours td {
 	
 height:55px;
-
 background-color:white;
 width:13%;
-
-
-
-
 text-align: center;
 vertical-align: middle;
+cursor:pointer;
 }
 
 
@@ -270,6 +266,46 @@ color:#455a64 ;
 background-color:white;
 width:5%;
 }
+
+
+
+#table_price_list th {
+	
+height:55px;
+color:white;
+background-color:#455a64 ;
+text-align: center;
+vertical-align: middle;
+
+}
+
+#table_price_list td {
+	
+height:55px;
+background-color:white;
+width:13%;
+text-align: center;
+vertical-align: middle;
+cursor:pointer;
+}
+
+
+#table_price_list tr td:first-child {
+	
+font-size:15px;
+color:#455a64 ;
+background-color:white;
+width:5%;
+}
+
+
+#table_price_list input { 
+
+text-align: center;
+vertical-align: middle;
+
+}  
+
 
 .select_fa_hours{
 

@@ -23,10 +23,17 @@
 		  <select class="form-control" id="court">
 			
 		  </select>
+		  
+		  
 		</div>
+
 	<div class="checkbox">
   <label><input id="regulamin" type="checkbox" value="">Akceptuję regulamin klubu "Squash Arena" </label>
 </div>	
+
+
+<center><h3><span id="price" class="label label-success"></span></h3></center>
+
 
 <div class="alert alert-success hidden" id="message_reservation">
 

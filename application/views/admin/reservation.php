@@ -40,6 +40,9 @@
 	  <label for="comment">Komentarz:</label>
 	  <textarea class="form-control" rows="3" id="comment"></textarea>
 	  </div>
+	  
+	  <center><h3><span id="price" class="label label-success"></span></h3></center>
+	  
 	  <div class="alert alert-success hidden messages" id="message_reservation">
 
 </div>
@@ -137,6 +140,8 @@
 	  <label for="comment">Komentarz:</label>
 	  <textarea disabled class="form-control" rows="3" id="comment_edit"></textarea>
 	  </div>
+	    <center><h3><span id="price_confirm" class="label label-success"></span></h3></center>
+	  	 	 
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default basic" data-dismiss="modal">Anuluj</button>
@@ -144,6 +149,9 @@
         <button type="button" id="delete_reserv" class="btn btn-danger">Usuń <i class="fa fa-trash" aria-hidden="true"></i></button>
 		
         <!-- <button type="button"  class="btn btn-primary">Zapisz <i class="fa fa-floppy-o" aria-hidden="true"></i></button> -->
+		
+        <button type="button" id="confirm_realisation" class="btn btn-primary ">Zrealizowane <i class="fa fa-usd" aria-hidden="true"></i></button>
+        <button type="button" id="confirm_ok" data-dismiss="modal" class="btn btn-success">Ok</button>
       </div>
     </div><!-- /.modal-content -->
 	
@@ -159,7 +167,7 @@
 		
 		<strong>Uwaga! </strong>
 		
-		Zbyt późno anulowana rezerwacja, zostanie naliczona opłata karna. <button data-toggle="tooltip" title="Anuluj kare"  class="btn btn-warning"><i style="color:white;" class="fa fa-times" aria-hidden="true"></i></button>
+		Zbyt późno anulowana rezerwacja, zostanie naliczona opłata karna. <button data-toggle="tooltip" title="Anuluj kare" id="cancel_penalty" class="btn btn-warning"><i style="color:white;" class="fa fa-times" aria-hidden="true"></i></button>
 
 		</div>
 			

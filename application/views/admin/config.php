@@ -67,7 +67,25 @@
 	
     <div role="tabpanel" class="tab-pane fade" id="payment">
 	
-	w budowie :)
+<table class="table" id="table_price_list" >
+
+			<thead>
+			<tr>
+			
+			<th></th>	
+			
+			<th>Pn</th>			
+			<th>Wt</th>			
+			<th>Śr</th>			
+			<th>Czw</th>			
+			<th>Pt</th>			
+			<th>So</th>			
+			<th>Nd</th>			
+			</thead>
+			
+			<tbody></tbody>
+			
+			</table>
 	
 	</div>
 

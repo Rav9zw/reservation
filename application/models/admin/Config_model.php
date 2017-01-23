@@ -113,6 +113,66 @@ if(array_key_exists($key,$default)){
 
 
 
+
+
+public function getPriceList($data,$where){
+	
+	
+	$default=array();
+	
+	$this->reserve->select('value,hour,day');
+	$this->reserve->from('a_config_price');
+	$this->reserve->where($where);
+	
+	$result=$this->reserve->get();
+	
+	foreach($result->result() as $row){
+		
+		$default[$row->hour][$row->day]=$row->value;
+		
+		
+		
+	}
+	
+
+	
+foreach ($data['table'] as $key=>$row){
+
+
+
+if(array_key_exists($key,$default)){
+	
+	
+	
+
+	foreach($row as $k=>$r){
+
+
+			if(array_key_exists($k,$default[$key])){
+	
+			$data['table'][$key][$k]='<div class="price">'.$default[$key][$k].'</div>';
+
+					}
+			
+				
+				}	
+
+				
+
+				}
+
+				
+			}
+	
+	
+	return $data;
+	
+	
+}
+
+
+
+
 private function checkConfig(){
 	
 	
@@ -120,10 +180,10 @@ private function checkConfig(){
 	
 }
 
-private function insertConfig($insert){
+private function insertConfig($insert,$base){
 	
 	
-$this->reserve->insert('a_config_hour', $insert);
+$this->reserve->insert($base, $insert);
 
 
  if($this->reserve->affected_rows() == 1){
@@ -145,13 +205,13 @@ $this->reserve->insert('a_config_hour', $insert);
 	
 }
 
-private function updateConfig($where,$update){
+private function updateConfig($where,$update,$base){
 	
 
 	
 $this->reserve->set( $update);
 $this->reserve->where($where);
-$this->reserve->update('a_config_hour'); 
+$this->reserve->update($base); 
 
 
  if($this->reserve->affected_rows() == 1){
@@ -174,7 +234,7 @@ $this->reserve->update('a_config_hour');
 
 
 
-public function newConfig($client,$day,$hour,$value){
+public function newConfig($client,$day,$hour,$value,$base){
 	
 		$where=array('client_id'=>$client,
 					 'hour'=>$hour,
@@ -196,7 +256,7 @@ public function newConfig($client,$day,$hour,$value){
 	
 		$this->reserve->select("start");
 		
-        $this->reserve->from("a_config_hour");
+        $this->reserve->from($base);
 
 		$this->reserve->where($where);
 	
@@ -211,7 +271,7 @@ public function newConfig($client,$day,$hour,$value){
 			
 			if($row->start==date('Y-m-d')){
 
-			self::updateConfig($where,$update);
+			self::updateConfig($where,$update,$base);
 			$isRecord=false;	
 			}else{
 		
@@ -221,7 +281,7 @@ public function newConfig($client,$day,$hour,$value){
 			$yesterday=$date->format('Y-m-d');
 
 			$update['end']=$yesterday;
-			$array['update']=self::updateConfig($where,$update);
+			$array['update']=self::updateConfig($where,$update,$base);
 
 			}
 
@@ -229,14 +289,18 @@ public function newConfig($client,$day,$hour,$value){
 			}
 	
 		if($isRecord)
-		$array['insert']=self::insertConfig($insert);	
+		$array['insert']=self::insertConfig($insert,$base);	
 
 
 	
 	
-	
-		$array['icon']=self::getIcons($value,'class');
-
+		if($base=='a_config_hour'){
+		$array['value']=$value;
+		$array['icons']=self::getIcons($value,'class');
+		}
+		else
+		$array['value']=$value;	
+		
 		return $array;
 	
 	

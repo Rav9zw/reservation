@@ -38,13 +38,40 @@ var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
  $("#admin_main_table").on("click", ".td_occupied", function() {
 	 
 	var id=$(this).data('id');
-		
+	 
+
+	$('#confirm_realisation').data('id',id); 
+	 	
+
+	
 	load_modal_details(id);
 	
 	
 	
 	
    });
+   
+    $("#admin_main_table").on("click", ".td_free", function() {
+	 
+
+	var hour=$(this).data('hour');
+			
+	var day=$('#start_date').val();
+		
+	get_price(client,day,hour);
+
+	
+   });
+   
+   $(".modal").on("click", "#confirm_realisation", function() {
+	 
+	var id=$(this).data('id'); 
+	
+	confirm_realisation(id);
+	
+   }); 
+   
+   
 
 	
 $('.datepicker').datepicker({
@@ -89,7 +116,7 @@ $('.time_row').removeClass('hidden');
 $('#comment').val('');
 
 $('#message_penalty').addClass('hidden');	
-
+$('#confirm_ok').addClass('hidden');	
    
    
 })
@@ -307,6 +334,19 @@ $("#main_table").on("click", ".td_click", function(){
 		
 			
 			});	
+			
+			
+			
+			
+			$(".modal").on("click", "#cancel_penalty", function(){
+				
+			$('#message_penalty').addClass('hidden');
+			
+		
+			
+			});	
+			
+			
 			
 			
 			$(".modal").on("click", "#delete_reserv_confirm", function(){
@@ -663,11 +703,23 @@ $.ajax({
 			
 			$('#delete_reserv').data('id',id);
 			$('#delete_reserv').data('hour',dane.dane.hour);
+			$('#price_confirm').html(dane.dane.price);
+			
 			
 			
 			$('#admin_edit_reservation').modal();
 
-
+			if(dane.dane.confirmed=='1'){
+				
+			$('#confirm_realisation').addClass('hidden').hide().fadeIn('slow');	
+			$('#confirm_ok').removeClass('hidden').hide().fadeIn('slow');	
+				
+				
+			}else{
+			$('#confirm_realisation').removeClass('hidden').hide().fadeIn('slow');	
+			$('#confirm_ok').addClass('hidden').hide().fadeIn('slow');		
+				
+			}
 			
 		
 			  },
@@ -683,6 +735,89 @@ $.ajax({
 
 }
 
+
+function 	get_price(client,day,hour){
+
+
+
+$.ajax({
+            url: "admin/Price",
+//          async: false,
+            async: true,
+            method: 'post',
+            dataType: "json",
+            data: {
+            client:client,
+            day:day,
+            hour:hour
+			},
+            beforeSend: function() {
+				
+				
+			
+        
+            },
+
+            success: function(dane) {
+				
+				
+				$('#price').html(dane.price);
+			
+
+			  },
+            
+          
+ 
+            });
+
+
+			
+
+
+
+}
+
+
+function confirm_realisation(id){
+
+
+
+$.ajax({
+            url: "admin/confirmRealisation",
+//          async: false,
+            async: true,
+            method: 'post',
+            dataType: "json",
+            data: {
+            id:id
+			},
+            beforeSend: function() {
+				
+				
+			
+        
+            },
+
+            success: function(dane) {
+				
+			$('#confirm_realisation').addClass('hidden').hide().fadeIn('slow');	
+			$('#confirm_ok').removeClass('hidden').hide().fadeIn('slow');	
+			
+			admin_available_courts(client,date_start,sub='0',0);
+			
+
+			  },
+            
+          
+ 
+            });
+
+
+			
+
+
+
+}
 
 function 	fill_players(){
 

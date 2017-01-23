@@ -1,7 +1,8 @@
 $(function() {
 
 working_hours();
-  
+price_list();
+
   
 //ajax //////////////////////////////////////////////////////////////////////
 
@@ -10,7 +11,23 @@ var client=1;
      
 
 
-$(document).on("click", "td", function() {
+	 
+$(document).on('click', function(e) {
+  if($(e.target).closest('td').length === 0) {
+		$('.fa_hours').removeClass('hidden');
+		$('.select_fa_hours').addClass('hidden');
+		$('.price').removeClass('hidden');
+		$('.input_price').addClass('hidden');
+  }
+});
+
+		
+	  
+
+
+	 
+	 
+$(document).on("click", "#table_working_hours td", function() {
 	 
 
 
@@ -26,6 +43,11 @@ $(document).on("click", "td", function() {
 		$(this).children('.fa_hours').addClass('hidden').hide().fadeIn();
 	 }
 
+	 
+	
+	 
+	 
+	 
 	
    });	
    
@@ -46,8 +68,47 @@ update_hours(client,day,hour,value);
 
 
 });
-	
 
+$(document).on('change', '.input_price', function() {
+	
+var value=$(this).children('input').val();	
+
+var hour=$(this).parent('td').data('hour');	
+
+var day=$(this).parent('td').data('day');	
+
+
+
+update_price(client,day,hour,value);
+
+
+
+});	
+
+	
+$(document).on("click", "#table_price_list td", function() {
+	 
+
+
+	
+	
+	 
+	 if($(this).children('.input_price').hasClass('hidden') && !$(this).children('.input_price').hasClass('temp') ){
+		 
+		 $(this).children('.input_price').children('input').val($(this).children('.price').html());
+	
+		$('.price').removeClass('hidden');
+		$('.input_price').addClass('hidden');
+		
+		
+		$(this).children('.input_price').removeClass('hidden').hide().fadeIn();
+		$(this).children('.price').addClass('hidden').hide().fadeIn();
+	 }
+	 
+
+	
+   });		
+	
 
 			
 function working_hours(client,day,hour,value){
@@ -116,13 +177,86 @@ $.ajax({
 
 
 
+
+
+function price_list(client,day,hour,value){
+
+ 
+
+$.ajax({
+            url: "config/priceList",
+//          async: false,
+            async: true,
+            method: 'post',
+            dataType: "json",
+            data: {
+      
+			
+			},
+            beforeSend: function() {
+			
+        
+            },
+
+            success: function(dane) {
+				
+		
+  
+
+
+				
+			var table='';	
+			var input='<div class="input_price hidden"><input type="text" class="form-control"></div>';
+			
+			
+				
+			$.each(dane.table,function(i){
+
+			
+			
+			
+			table+='<tr>';		
+			table+='<td>'+i+'</td>';	
+
+			
+			$.each(this,function(j){
+				
+			table+='<td data-hour="'+i+'" data-day="'+j+'">'+this+input+'</td>';	
+	
+			
+			});
+			
+			table+='</tr>';	
+				
+			});
+			
+			$('#table_price_list>tbody').html(table);
+			
+			
+			  },
+            
+          
+ 
+            });
+
+
+			
+
+
+
+}
+
+
+
+
+
 function update_hours(client,day,hour,value){
 	
 var icon=$('[data-day="'+day+'"][data-hour="'+hour+'"]').children('.fa_hours');
 var sel=$('[data-day="'+day+'"][data-hour="'+hour+'"]').children('.select_fa_hours');
 	
 	$.ajax({
-            url: "config/updateHours",
+            url: "config/updateConfig",
 //          async: false,
             async: true,
             method: 'post',
@@ -131,7 +265,8 @@ var sel=$('[data-day="'+day+'"][data-hour="'+hour+'"]').children('.select_fa_hou
 			client:client,
 			day:day,
 			hour:hour,
-			value:value
+			value:value,
+			base:'a_config_hour'
 			
 			},
             beforeSend: function() {
@@ -143,7 +278,7 @@ var sel=$('[data-day="'+day+'"][data-hour="'+hour+'"]').children('.select_fa_hou
 			icon.addClass('fa-spin fa-spinner').css("display", "");	
 			
 			
-	
+			
 			
             },
 
@@ -151,21 +286,8 @@ var sel=$('[data-day="'+day+'"][data-hour="'+hour+'"]').children('.select_fa_hou
 				
 				
 			sel.removeClass('temp');
-			icon.removeClass('fa-spin fa-spinner').addClass(dane.icon).hide().fadeIn('slow');	
-			
-			
-			//$('[data-day="'+day+'"][data-hour="'+hour+'"]').children('.fa_hours').removeClass('fa-spin fa-spinner').addClass(dane.icon);	
-			
-			//	var changed=$('[data-day="'+day+'"][data-hour="'+hour+'"]');
-			
-			//changed.removeClass('hidden').css("background-color", "#a5d6a7 ").hide().fadeIn('slow');
-			/*
-			setTimeout(function(){
-			//changed.html(dane.icon).css("background-color", "white ");
-			//changed.children('.fa_hours').hide().fadeIn('slow');
-			
-			}, 2000);
-			*/
+			icon.removeClass('fa-spin fa-spinner').addClass(dane.icons).hide().fadeIn('slow');	
+			icon.data('value',dane.value);
 			  },
             
           
@@ -176,6 +298,61 @@ var sel=$('[data-day="'+day+'"][data-hour="'+hour+'"]').children('.select_fa_hou
 	
 }
 
+
+
+
+
+function update_price(client,day,hour,value){
+	
+	
+
+	
+var newValue=$('[data-day="'+day+'"][data-hour="'+hour+'"]').children('.price');
+var input=$('[data-day="'+day+'"][data-hour="'+hour+'"]').children('.input_price');
+	
+	$.ajax({
+            url: "config/updateConfig",
+//          async: false,
+            async: true,
+            method: 'post',
+            dataType: "json",
+            data: {
+			client:client,
+			day:day,
+			hour:hour,
+			value:value,
+			base:'a_config_price'
+			
+			},
+            beforeSend: function() {
+				
+				
+			input.addClass('hidden temp');
+			
+			newValue.html('');
+			newValue.removeClass('hidden');	
+			newValue.addClass('fa fa-spin fa-spinner').css("display", "");	
+			
+			
+	
+			
+            },
+
+            success: function(dane) {
+				
+			input.removeClass('temp');
+	
+			newValue.removeClass('fa fa-spin fa-spinner').html(dane.value).hide().fadeIn('slow');	
+
+			  },
+            
+          
+ 
+            });
+	
+	
+	
+}
 
 
 
