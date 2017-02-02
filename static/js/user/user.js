@@ -171,7 +171,23 @@ $("#main_table").on("click", ".td_click", function(){
 		
 			
 			});		
+	
+
+
+$(".modal").on("click", "#send_verification_code_user", function(){
+
+
+				var email=$('#user_new_email').val();
+				
+				
+				
+				send_verification_code(email);
 			
+				
+				});	
+
+
+	
 	$(".modal").on("click", "#save_user_new_user", function(){
 
 
@@ -179,10 +195,11 @@ $("#main_table").on("click", ".td_click", function(){
 				var surname=$('#user_new_surname').val();
 				var name=$('#user_new_name').val();
 				var email=$('#user_new_email').val();
+				var code=$('#verification_code').val();
 				
 				
 				
-				insert_new_player(phone,surname,name,email);
+				insert_new_player(phone,surname,name,email,code);
 			
 				
 				});				
@@ -524,7 +541,7 @@ $.ajax({
 
 
 
-function 	insert_new_player(phone,surname,name,email){
+function 	insert_new_player(phone,surname,name,email,code){
 
 
 
@@ -539,7 +556,8 @@ $.ajax({
             phone:phone,
             surname:surname,
             name:name,
-			email:email
+			email:email,
+			code:code
 			
 			
 			},
@@ -592,6 +610,68 @@ $.ajax({
 
 
 
+function 	send_verification_code(email){
+
+
+
+$.ajax({
+            url: "index.php/user/sendVerificationCode",
+//          async: false,
+            async: true,
+            method: 'post',
+            dataType: "json",
+            data: {
+				
+
+			email:email
+			
+			
+			},
+            beforeSend: function() {
+				
+
+            },
+
+            success: function(dane) {
+			
+			
+				$('#message_user_new_user').removeClass('alert-danger');
+			
+				//console.log(dane.result.message);
+			
+		
+				
+			
+		
+				if(dane.result.status=='success'){
+					
+				$('#save_user_new_user').removeClass('hidden').hide().fadeIn('slow');
+				$('#verification_code_form').removeClass('hidden').hide().fadeIn('slow');
+				$('#send_verification_code_user').addClass('hidden').hide().fadeIn('slow');
+			
+				
+				
+				
+
+			}
+		
+		
+		
+		
+		
+		
+			  },
+            
+          
+ 
+            });
+
+
+			
+
+
+
+}
 
 
 

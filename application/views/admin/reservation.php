@@ -103,7 +103,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" id="cancel_admin_new_user" class="btn btn-default basic" data-dismiss="modal">Anuluj</button>
-        <button type="button" id="admin_back" class="btn btn-warning basic">Cofnij</button>
+        <button type="button" id="admin_back" class="btn btn-warning basic">Powrót do rezerwacji</button>
         <button type="button" id="save_admin_new_user" class="btn btn-primary basic">Dodaj</button>
         <button type="button" id="ok_admin_new_user" class="btn btn-success hidden confirm" data-dismiss="modal">Ok</button>
       </div>
@@ -216,10 +216,11 @@
 
 
   
+
   <!-- Page Content -->
     
             <div class="container-fluid" id="admin_main_reservation">
-               
+            
  <div id="panel_reservation_admin" class="panel panel-default panel_date">
 		<div class="row">
 		
@@ -236,39 +237,7 @@
 		
 		
 		
-		<div class="row" >
-		<div class="col-lg-2 col-sm-2 col-md-2">
 		
-		
-	
-		<button type="button" class="btn btn-default button_date minus" data-time='1' aria-label="Left Align">
-		<span class="glyphicon  glyphicon-chevron-left" aria-hidden="true"></span>
-		</button>
-	
-	</div>
-			
-			<div class="col-lg-6 col-md-6 col-sm-6">
-				
-				<div class="input-group date " >
-					<input type="text" id="start_date" class="form-control datepicker">
-					<div class="input-group-addon">
-						<span class="glyphicon glyphicon-calendar open-datepicker"></span>
-					</div>
-				</div>
-			
-
-	</div>
-
-		
-				<div class="col-lg-2 col-sm-2 col-md-2">
-		
-				<button type="button" class="btn btn-default button_date plus" data-time='1' aria-label="Right Align">
-				  <span class="glyphicon  glyphicon-chevron-right" aria-hidden="true"></span>
-				</button>
-				
-				
-				</div>
-			</div>
 
 </div>
 
@@ -292,7 +261,8 @@
 		   
 		
 		
-		
+		  <input type="hidden" value="<?php echo date('Y-m-d');?>" id="start_date">
+
 		<div id="admin_main_table" class="hidden" >          
 
 			</div>

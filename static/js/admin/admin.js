@@ -1,5 +1,126 @@
 $(function() {
+/*
+// target elements with the "draggable" class
+interact('.draggable')
+  .draggable({
+    // enable inertial throwing
+    inertia: true,
+    // keep the element within the area of it's parent
+    restrict: {
+      restriction: "#admin_main_table",
+      endOnly: true,
+      elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+    },
+    // enable autoScroll
+    autoScroll: true,
 
+    // call this function on every dragmove event
+    onmove: dragMoveListener,
+    // call this function on every dragend event
+    onend: function (event) {
+      var textEl = event.target.querySelector('p');
+
+      textEl && (textEl.textContent =
+        'moved a distance of '
+        + (Math.sqrt(event.dx * event.dx +
+                     event.dy * event.dy)|0) + 'px');
+    }
+  });
+
+  function dragMoveListener (event) {
+    var target = event.target,
+        // keep the dragged position in the data-x/data-y attributes
+        x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx,
+        y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+    // translate the element
+    target.style.webkitTransform =
+    target.style.transform =
+      'translate(' + x + 'px, ' + y + 'px)';
+
+    // update the posiion attributes
+    target.setAttribute('data-x', x);
+    target.setAttribute('data-y', y);
+  }
+
+  // this is used later in the resizing and gesture demos
+  window.dragMoveListener = dragMoveListener;
+  
+  
+  
+  
+// enable draggables to be dropped into this
+interact('.dropzone').dropzone({
+  // only accept elements matching this CSS selector
+  //accept: '#yes-drop',
+  // Require a 75% element overlap for a drop to be possible
+  overlap: 0.75,
+
+  // listen for drop related events:
+
+  ondropactivate: function (event) {
+    // add active dropzone feedback
+    event.target.classList.add('drop-active');
+  },
+  ondragenter: function (event) {
+    var draggableElement = event.relatedTarget,
+        dropzoneElement = event.target;
+
+    // feedback the possibility of a drop
+    dropzoneElement.classList.add('drop-target');
+    draggableElement.classList.add('can-drop');
+   
+  },
+  ondragleave: function (event) {
+	
+    // remove the drop feedback style
+    event.target.classList.remove('drop-target');
+    event.relatedTarget.classList.remove('can-drop');
+ 
+  },
+  ondrop: function (event) {
+	  
+
+	  
+	  
+
+       
+        y = $(event.target).position().top,
+        x = $(event.target).position().left ;
+console.log(y);
+console.log(y);
+		
+	
+
+
+    // update the posiion attributes
+    event.relatedTarget.setAttribute('data-x', x);
+    event.relatedTarget.setAttribute('data-y', y); 
+	  
+
+	  
+	  
+	  
+	  
+	  
+	  
+	console.log($(event.target).data('hour'));
+	console.log($(event.relatedTarget).html());
+
+	},
+  ondropdeactivate: function (event) {
+	  
+    // remove active dropzone feedback
+    event.target.classList.remove('drop-active');
+    event.target.classList.remove('drop-target');
+	
+  }
+});
+  
+
+  
+  */
+  
 // zmienne
 
 
@@ -77,13 +198,17 @@ var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 $('.datepicker').datepicker({
         
 		format: 'yyyy-mm-dd',
-	    calendarWeeks: true,
+	
 		todayHighlight: true,
         autoclose: true,
 		weekStart:1,
-		 language: 'pl'
+		language: 'pl',
+		todayBtn:'linked'
 		
-});
+}).on('changeDate', function(e){
+  date_select(e.format('yyyy-mm-dd'));
+  $('#start_date').val(e.format('yyyy-mm-dd'));
+    });;
 
 
 
@@ -92,7 +217,7 @@ $('.open-datepicker').click(function(event){
     $('#start_date').datepicker('show');
 });
 
-$('#start_date').datepicker('update', today);
+$('#start_date_picker').datepicker('update', today);
 
 
 
@@ -135,43 +260,30 @@ var date_start=$('#start_date').val();
 admin_available_courts(client,date_start,sub='0',1);
 
 setInterval(function(){ 
-if($('#showdeleted').children('.fa').hasClass('fa-trash-o'))
+
+
+if($('#showdeleted').children('.fa').hasClass('fa-trash-o')){
+var date_start=$('#start_date').val();
 admin_available_courts(client,date_start,sub='0',0);
+
+}
+
 
  }, 15000);
 
 
       
-$('.panel_date').on('change', '.datepicker', function() {
-
-date_start=$('#start_date').val();
+function date_select(date_start){
 
 if($('#showdeleted').children('.fa').hasClass('fa-trash-o'))
 admin_available_courts(client,date_start,sub='0',1,0);
 else
 admin_available_courts(client,date_start,sub='0',1,1);
   
-});
+};
 
 
-$('.panel_date').on('click', '.button_date', function() {
 
-
-date_start=$('#start_date').val();
-var date = new Date(date_start);
-
-
-if($(this).hasClass('plus'))
-var today = new Date(date.getFullYear(), date.getMonth(), date.getDate()+$(this).data('time'));
-if($(this).hasClass('minus'))
-var today = new Date(date.getFullYear(), date.getMonth(), date.getDate()-$(this).data('time'));
-
-
-$('#start_date').datepicker('update', today);
-
-
-  
-});
 
 
 
@@ -478,16 +590,16 @@ $.ajax({
 						
 							if(this.lvl==9)
 							{
-									tabela+='<td  data-ishalf="'+isHalf+'" data-availability="free" data-hour="'+i+'" data-court="'+k+'" class="td_free td_click">'+this.text+'</td>';
+									tabela+='<td  data-ishalf="'+isHalf+'" data-availability="free" data-hour="'+i+'" data-court="'+k+'" class="dropzone td_free td_click">'+this.text+'</td>';
 							
 							
 							}else if(this.lvl==0 || this.lvl==1){
 								
-									tabela+='<td data-ishalf="'+isHalf+'" data-id="'+this.id+'" data-availability="occupied" data-hour="'+i+'" data-court="'+k+'" class="td_occupied td_click">'+this.text+'</td>';
+									tabela+='<td data-ishalf="'+isHalf+'" data-id="'+this.id+'" data-availability="occupied" data-hour="'+i+'" data-court="'+k+'" class="dropzone td_occupied td_click">'+this.text+'</td>';
 								
 							}else if(this.lvl==2 || this.lvl==3){
 								
-									tabela+='<td data-ishalf="'+isHalf+'" data-id="'+this.id+'" data-hour="'+i+'" data-court="'+k+'" class="td_deleted td_click">'+this.text+'</td>';
+									tabela+='<td data-ishalf="'+isHalf+'" data-id="'+this.id+'" data-hour="'+i+'" data-court="'+k+'" class="dropzone td_deleted td_click">'+this.text+'</td>';
 								
 							}
 									

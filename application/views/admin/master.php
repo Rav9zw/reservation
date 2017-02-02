@@ -46,6 +46,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
     <script src="<?php echo base_url(); ?>static/js/user/plugins/bootstrap-datepicker.pl.js" charset="UTF-8"></script>
 	
 	<script src="<?php echo base_url(); ?>static/js/admin/plugins/pace.min.js"></script>
+	
+	<script src="//cdnjs.cloudflare.com/ajax/libs/interact.js/1.2.6/interact.min.js"></script>
 	 
 </head>
 <body>
@@ -55,7 +57,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 <div class="sliding navmenu navmenu-default navmenu-fixed-left offcanvas-sm">
  
 	
-      <a class="navmenu-brand visible-md visible-lg" href="#">Admin panel</a>
+      <a class="navmenu-brand visible-md visible-lg" href="#"><?php echo $user; ?></a>
       <ul class="nav navmenu-nav">
         <li class="<?echo @$admin_active; ?>"><a href="<?php echo base_url(); ?>index.php/admin">Rezerwacje</a></li>
         <li class="<?echo @$usersadministration_active; ?>"><a href="<?php echo base_url(); ?>index.php/usersadministration">Użytkownicy</a></li>
@@ -63,6 +65,31 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         
       </ul>
      
+	 
+		<div class="row" >
+	
+				<div class="col-lg-1 col-md-1 col-sm-1"></div>
+			<div class="col-lg-10 col-md-10 col-sm-10">
+				
+				
+					<div id="start_date_picker" class="datepicker"></div>
+				
+				
+			
+			
+
+			</div>
+		<div class="col-lg-1 col-md-1 col-sm-1"></div>
+		
+			
+		</div> 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
     </div>
  <button class="btn" id="show_hide_menu"><a  id="show_hide_menu_a" class="fa fa-2x fa-times"></a></button>
     <div class="sliding navbar navbar-default navbar-fixed-top hidden-md hidden-lg">
@@ -72,6 +99,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         <span class="icon-bar"></span>
       </button>
       <a class="navbar-brand" href="#">Admin panel</a>
+	  
+	  
+	  
     </div>
 
 

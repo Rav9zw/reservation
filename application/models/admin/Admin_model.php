@@ -42,28 +42,28 @@ private function getReservationType($player,$type,$isNew,$latest,$notatka,$cofir
 	switch($type){
 		
 		
-		case 0: $reservation="<div class='$animation alert_reserv alert alert-success' role='alert'><strong>$confirmed $player</strong></br>
-		$notatka<br>
+		case 0: $reservation="<div draggable='true' class='draggable $animation alert_reserv alert alert-success' role='alert'><strong>$confirmed $player</strong></br>
+		<br>
 		</div>";
 		break;		
 		
-		case 1: $reservation="<div class='$animation alert_reserv alert alert-info' role='alert'><strong>$confirmed $player</strong></br>
-		$notatka
+		case 1: $reservation="<div draggable='true' class='draggable $animation alert_reserv alert alert-info' role='alert'><strong>$confirmed $player</strong></br>
+		
 		</div>";
 		break;
 		
-		case 2: $reservation="<div class='alert_reserv alert alert-warning' role='alert'><strong>$confirmed $player</strong></br>
-		$notatka
+		case 2: $reservation="<div draggable='true' class='draggable alert_reserv alert alert-warning' role='alert'><strong>$confirmed $player</strong></br>
+	
 		</div>";
 		break;
 		
-		case 3: $reservation="<div class='alert_reserv alert alert-danger' role='alert'><strong>$confirmed $player</strong></br>
-		$notatka
+		case 3: $reservation="<div draggable='true' class='draggable alert_reserv alert alert-danger' role='alert'><strong>$confirmed $player</strong></br>
+	
 		</div>";
 		break;
 		
-		default:$reservation="<div class='$animation alert_reserv alert alert-primary' role='alert'><strong>$confirmed $player</strong></br>
-		$notatka
+		default:$reservation="<div draggable='true' class='draggable $animation alert_reserv alert alert-primary' role='alert'><strong>$confirmed $player</strong></br>
+	
 		</div>";
 	}
 	return $reservation;
@@ -130,6 +130,7 @@ public function get_available_courts($where){
 			$array[$row->godzina]['kort '.$row->nr_kortu]['lvl']=$row->typ_rezerwacji;
 		
 			$array[$row->godzina]['kort '.$row->nr_kortu]['id']=$row->id;
+			$array[$row->godzina]['kort '.$row->nr_kortu]['notatka']=$row->notatka;
 			
 		
 		

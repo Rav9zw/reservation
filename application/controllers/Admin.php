@@ -10,17 +10,32 @@ class Admin extends CI_Controller {
 
 
      $this->load->model('admin/Admin_model');
-
+	 $this->load->library('session');
         
     }
 
     public function index() {
-
+		
+		
+		
+		if($this->session->userdata('logged_in'))
+		{
+   
 		$dane['site']='reservation';
 		$dane['js']='admin';
 		$dane['admin_active']='active';
-
+		$user=$this->session->userdata('logged_in');
+		$dane['user']=$user['user'];
 		$this->load->view('admin/master', $dane);
+		
+		}
+		else
+	   {
+		 //If no session, redirect to login page
+		 redirect('login', 'refresh');
+	   }
+
+	
 
 						}
 						

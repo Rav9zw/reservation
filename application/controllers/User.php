@@ -299,9 +299,25 @@ public function checkPhone()
 		$surname=$this->input->post('surname');
 		$name=$this->input->post('name');
 		$email=$this->input->post('email');
+		$code=$this->input->post('code');
 		
 		
 		
+		$where=array(
+			
+			
+			'email'=>$email,
+			'code'=>$code
+		
+						
+			);
+		
+		$result['result']=$this->User_model->checkVerificationCode($where);
+		
+		
+		
+		if($result['result']['status']=='success'){
+			
 			$insert=array(
 			
 			'phone'=>$phone,
@@ -326,11 +342,11 @@ public function checkPhone()
 		//wrzucanie nowej rezerwacji
 		$result['result']=$this->User_model->insertNewPlayer($insert,$where);
 			
-
+			}
 		
 		echo json_encode($result);	
 			
-			
+		
 			
 			
 		}	
@@ -368,6 +384,37 @@ public function sms_send($params ,$backup = false)
 
 
 
+   		public function sendVerificationCode(){
+			
+
+		$email=$this->input->post('email');
+		$code=mt_rand(10000000, 99999999);
+		$data=date('Y-m-d H:i:s');
+		
+			$insert=array(
+			
+			'email'=>$email,
+			'code'=>$code,
+			'date'=>$data
+						
+			);
+	
+		$insert = $this->security->xss_clean($insert);
+			
+			
+			
+
+		//wrzucanie nowej rezerwacji
+		$result['result']=$this->User_model->insertCode($insert);
+			
+
+		
+		echo json_encode($result);	
+			
+			
+			
+			
+		}	
 
 
 

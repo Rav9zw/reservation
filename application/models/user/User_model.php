@@ -497,11 +497,63 @@ public function insertNewPlayer($insert,$where){
 
 
 
+public function insertCode($insert){
+	
+
+		$this->reserve->insert('verification_code', $insert);
+
+
+		//echo $this->reserve->affected_rows();
+		//  echo $this->reserve->last_query();
+
+	 if($this->reserve->affected_rows() == 1){
+		 
+	
+		 $array['status']='success';
+
+	 } else{
+		 
+		 $array['message']='<strong>Błąd!</strong> Coś poszło nie tak, prosze odświeżyc strone i spróbować ponownie';
+		 $array['status']='danger';
+		 
+		 
+	 }
+	
+		return $array;
+			
+	
+}
 
 
 
+public function checkVerificationCode($where){
+	
 
+		$array=array();
+	
+		$this->reserve->select("email");
+		
+        $this->reserve->from("verification_code");
 
+		$this->reserve->where($where);
+	
+		$result = $this->reserve->get();
+		
+		if($result->num_rows()==0){
+			
+		$array['message']='<strong>Uwaga!</strong> Błedny kod aktywacyjny';
+		$array['status']='danger';
+
+		
+		return $array;
+	}
+	
+	$array['status']='success';
+	
+	return 	$array;
+			
+	
+}
 
 
 

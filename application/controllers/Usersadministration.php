@@ -10,7 +10,7 @@ class Usersadministration extends CI_Controller {
 
 
       $this->load->model('admin/Usersadministration_model');
-	//	$this->load->library('session');
+	  $this->load->library('session');
 
 
         
@@ -18,13 +18,27 @@ class Usersadministration extends CI_Controller {
 
     public function index() {
 
-		
+	
+	
+		if($this->session->userdata('logged_in'))
+		{
+   
 		$dane['site']='usersadministration';
 		$dane['js']='usersadministration';
 		$dane['usersadministration_active']='active';
+		$user=$this->session->userdata('logged_in');
+		$dane['user']=$user['user'];
 		
 		$this->load->view('admin/master', $dane);
 
+		}
+		else
+	   {
+		 //If no session, redirect to login page
+		 redirect('login', 'refresh');
+	   }
+		
+		
 		
 		
 		

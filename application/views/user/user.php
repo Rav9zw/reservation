@@ -68,7 +68,7 @@
   <div class="form-group">
     <label for="user_new_phone"  class="col-sm-2 control-label">Telefon</label>
     <div class="col-sm-10">
-      <input class="form-control" id="user_new_phone" type="text" value="">
+      <input class="form-control" id="user_new_phone" type="numeric" value="">
     </div>
   </div>
  
@@ -93,6 +93,13 @@
       <input class="form-control" id="user_new_email" type="text" value="">
     </div>
   </div>
+  
+  <div id="verification_code_form"  class="form-group hidden">
+    <label for="verification_code"  class="col-sm-2 control-label">Kod aktywacyjny</label>
+    <div class="col-sm-10">
+      <input class="form-control" id="verification_code" type="text" value="">
+    </div>
+  </div>
  
 	</form>
 	 
@@ -103,7 +110,8 @@
   
       <div class="modal-footer">
         <button type="button" class="btn btn-default cancelation" data-dismiss="modal">Anuluj</button>
-        <button type="button" id="save_user_new_user" class="btn btn-primary">Utwórz konto</button>
+        <button type="button" id="send_verification_code_user" class="btn btn-warning">Wyślij kod</button>
+        <button type="button" id="save_user_new_user" class="btn btn-primary hidden">Utwórz konto</button>
         <button type="button" id="back_user_new_user" class="btn btn-primary hidden">Powrót do rezerwacji</button>
       </div>
     </div><!-- /.modal-content -->
