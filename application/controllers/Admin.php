@@ -14,7 +14,7 @@ class Admin extends CI_Controller {
         
     }
 
-    public function indextest() {
+    public function index() {
 		
 		
 		
